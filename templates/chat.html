@@ -136,8 +136,24 @@
         .desk-sc { background:#f9fafb; border:1px solid var(--light); border-radius:10px; padding:10px 14px; font-size:13px; color:#374151; cursor:pointer; text-align:left; }
         .desk-sc:hover { background:var(--tan); }
         .desk-footer { margin-top:auto; display:flex; flex-direction:column; gap:10px; }
-        .desk-logout { display:block; text-align:center; color:var(--red); text-decoration:none; font-size:12px; font-weight:700; padding:9px; border-radius:10px; border:1.5px solid var(--red); }
+        .desk-logout { display:block; text-align:center; color:var(--red); text-decoration:none; font-size:12px; font-weight:700; padding:9px; border-radius:10px; border:1.5px solid var(--red); position:relative; }
         .desk-logout:hover { background:#fee2e2; }
+
+        /* ── Logout red dot indicator ── */
+        .logout-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            background: var(--red);
+            border-radius: 50%;
+            margin-left: 6px;
+            vertical-align: middle;
+            animation: logoutPulse 1.4s ease-in-out infinite;
+        }
+        @keyframes logoutPulse {
+            0%   { box-shadow: 0 0 0 0 rgba(239,68,68,.8); transform: scale(1); }
+            50%  { box-shadow: 0 0 0 5px rgba(239,68,68,0); transform: scale(1.15); }
+            100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); transform: scale(1); }
+        }
         .desk-tag { text-align:center; font-size:9px; color:#9ca3af; letter-spacing:1.5px; }
         .desk-tag span { color:#4b5563; font-weight:bold; }
         .desk-main  { flex:1; display:flex; flex-direction:column; background:var(--bg); }
@@ -223,7 +239,7 @@
                 <hr class="ham-divider">
                 <a class="ham-item danger" href="/logout">
                     <svg class="ham-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Logout
+                    Logout<span class="logout-dot"></span>
                 </a>
             </div>
         </div>
@@ -269,7 +285,7 @@
         <div class="desk-footer">
             <button class="desk-sc" onclick="openModal('aboutModal')" style="text-align:center;">ℹ About Jarvis</button>
             <button class="desk-sc" onclick="openModal('devModal')"  style="text-align:center;">👤 Developer</button>
-            <a href="/logout" class="desk-logout">Logout</a>
+            <a href="/logout" class="desk-logout">Logout<span class="logout-dot"></span></a>
             <p class="desk-tag">Created By <span>AADIN</span></p>
         </div>
     </div>
