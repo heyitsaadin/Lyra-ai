@@ -497,6 +497,12 @@
                     <svg style="margin-left:auto;width:14px;height:14px;stroke:var(--mid);fill:none;stroke-width:2;stroke-linecap:round;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
                 <hr class="d-divider">
+                <button class="d-item" onclick="drawerGoTo('drawerPrivacy')">
+                    <svg class="d-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Privacy Policy
+                    <svg style="margin-left:auto;width:14px;height:14px;stroke:var(--mid);fill:none;stroke-width:2;stroke-linecap:round;" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                <hr class="d-divider">
                 <div class="d-toggle-row" onclick="toggleDarkMode()">
                     <div class="d-toggle-left">
                         <svg class="d-icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -526,6 +532,23 @@
 
             <!-- Developer sub-panel -->
             <div class="drawer-page slide-in" id="drawerDev">
+                <button class="d-back" onclick="drawerGoBack()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                    Back
+                </button>
+                <div class="d-card">
+                    <div class="d-card-icon" style="background:#e0e7ff;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#4f46e5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <h3>Aadin</h3>
+                    <p class="ver">DEVELOPER · CREATOR</p>
+                    <p>Jarvis was designed and built by Aadin, a self-taught developer passionate about AI and cybersecurity.</p>
+                    <p>Built entirely on a mobile phone — backend, security layer, and UI — as part of a vision for AI-powered secure systems.</p>
+                    <p class="tag">JARVIS CORE // <span>AADIN</span></p>
+                </div>
+            </div>
+            <!-- Developer sub-panel -->
+            <div class="drawer-page slide-in" id="drawerPrivacy">
                 <button class="d-back" onclick="drawerGoBack()">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
                     Back
