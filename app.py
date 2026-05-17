@@ -876,6 +876,70 @@ def privacy():
     return render_template("privacy.html")
 
 
+@app.route("/quiz")
+def quiz():
+    if "user" not in session:
+        return redirect("/")
+    heartbeat(session["user"])
+    return render_template("quiz.html", username=session["user"])
+
+
+@app.route("/generate_quiz", methods=["POST"])
+def generate_quiz():
+    import json as _json
+    import pdfplumber
+    if "user" not in session:
+        return _json.dumps({"error": "not_logged_in"}), 401, {"Content-Type": "application/json"}
+    heartbeat(session["user"])
+    pdf_file = request.files.get("pdf")
+    if not pdf_file or not pdf_file.filename.lower().endswith(".pdf"):
+        return _json.dumps({"error": "Please upload a valid PDF file."}), 400, {"Content-Type": "application/json"}
+    try:
+        with pdfplumber.open(pdf_file) as pdf:
+            pages_text = []
+            for page in pdf.pages[:20]:
+                t = page.extract_text()
+                if t:
+                    pages_text.append(t)
+        raw_text = "\n".join(pages_text).strip()
+    except Exception as e:
+        return _json.dumps({"error": f"Could not read PDF: {str(e)}"}), 400, {"Content-Type": "application/json"}
+    if not raw_text or len(raw_text) < 100:
+        return _json.dumps({"error": "PDF appears empty or image-only. Use a text-based PDF."}), 400, {"Content-Type": "application/json"}
+    study_material = raw_text[:6000]
+    API_KEY = os.environ["GROQ_API_KEY"]
+    url     = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {"Authorization": "Bearer " + API_KEY, "Content-Type": "application/json"}
+    system_prompt = """You are a professional exam question generator.
+Return ONLY a valid JSON array of 10 MCQ objects. No explanation, no markdown, no code fences.
+Each object must have: "question", "options" (array of 4 strings), "answer" (exact string from options), "explanation" (1-2 sentences)."""
+    data = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [
+            {"role": "system", "content": system_prompt},
+            {"role": "user",   "content": f"Study material:\n\n{study_material}\n\nGenerate 10 MCQ questions."}
+        ],
+        "max_tokens": 2048,
+        "temperature": 0.4,
+    }
+    try:
+        res = requests.post(url, headers=headers, json=data, timeout=40)
+        raw = res.json()["choices"][0]["message"]["content"].strip()
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+        raw = raw.strip().rstrip("`").strip()
+        questions = _json.loads(raw)
+        if not isinstance(questions, list) or len(questions) == 0:
+            raise ValueError("Empty list")
+        return _json.dumps({"questions": questions}), 200, {"Content-Type": "application/json"}
+    except _json.JSONDecodeError:
+        return _json.dumps({"error": "AI returned invalid response. Try again."}), 500, {"Content-Type": "application/json"}
+    except Exception as e:
+        return _json.dumps({"error": f"Quiz generation failed: {str(e)}"}), 500, {"Content-Type": "application/json"}
+
+
 init_db()
 
 if __name__ == "__main__":
