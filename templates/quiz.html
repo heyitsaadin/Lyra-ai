@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Jarvis Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <style>
+        /* ── Same root variables as chat.html ── */
+        :root {
+            --tan:    #f5e3b0;
+            --tan2:   #d1a84b;
+            --white:  #ffffff;
+            --bg:     #f3f4f6;
+            --dark:   #1f2937;
+            --red:    #ef4444;
+            --mid:    #6b7280;
+            --light:  #e5e7eb;
+            --green:  #10b981;
+            --radius: 16px;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box;
+            font-family:'Segoe UI',system-ui,sans-serif;
+            -webkit-tap-highlight-color:transparent; }
+
+        body {
+            background: #d1d5db;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            overflow-x: hidden;
+        }
+
+        /* ── Dark mode (mirrors chat.html) ── */
+        body.dark-mode {
+            --white:  #1e1e1e;
+            --bg:     #141414;
+            --dark:   #f3f4f6;
+            --light:  #2e2e2e;
+            --mid:    #9ca3af;
+            background: #0a0a0a;
+        }
+
+        /* ─────────────────────────────────────
+           SHELL — same max-width card as chat
+        ───────────────────────────────────── */
+        .shell {
+            width: 100%;
+            max-width: 480px;
+            min-height: 100dvh;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        body.dark-mode .shell { background: #141414; }
+
+        /* ── Header (identical feel to chat header) ── */
+        .header {
+            background: linear-gradient(90deg, rgba(245,227,176,.35), var(--bg) 70%);
+            border-bottom: 1px solid var(--light);
+            padding: 14px 16px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            animation: headerReveal .4s cubic-bezier(.4,0,.2,1) both;
+        }
+        body.dark-mode .header {
+            background: linear-gradient(90deg, rgba(245,227,176,.1), #1e1e1e 70%);
+            border-color: #2e2e2e;
+        }
+
+        .header-avatar {
+            width: 38px; height: 38px;
+            background: var(--dark);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            animation: avatarPop .5s cubic-bezier(.4,0,.2,1) both;
+        }
+
+        .header-info { flex: 1; min-width: 0; }
+        .header-info h2 {
+            font-size: 15px; font-weight: 700;
+            color: var(--dark); line-height: 1.2;
+        }
+        .header-info span {
+            font-size: 11px; color: var(--mid);
+        }
+
+        .header-back {
+            background: none; border: none;
+            color: var(--mid); font-size: 13px;
+            cursor: pointer; padding: 6px 10px;
+            border-radius: 10px;
+            transition: background .15s, color .15s;
+            text-decoration: none;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .header-back:hover { background: var(--light); color: var(--dark); }
+
+        /* dark toggle */
+        .dark-toggle {
+            width: 34px; height: 34px;
+            border-radius: 9px;
+            background: none; border: 1px solid var(--light);
+            color: var(--mid); font-size: 15px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background .15s, color .15s;
+        }
+        .dark-toggle:hover { background: var(--light); color: var(--dark); }
+
+        /* ── Main scrollable area ── */
+        .main {
+            flex: 1;
+            padding: 20px 16px 32px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* ─────────────────────────────────────
+           UPLOAD SECTION
+        ───────────────────────────────────── */
+        .upload-card {
+            background: var(--white);
+            border: 1.5px dashed var(--light);
+            border-radius: 18px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color .2s, background .2s, transform .15s;
+            animation: scaleIn .35s cubic-bezier(.4,0,.2,1) both;
+            position: relative;
+            overflow: hidden;
+        }
+        .upload-card:hover, .upload-card.drag-over {
+            border-color: var(--tan2);
+            background: rgba(245,227,176,.07);
+            transform: translateY(-1px);
+        }
+        .upload-card input[type=file] {
+            position: absolute; inset: 0;
+            opacity: 0; cursor: pointer;
+            width: 100%; height: 100%;
+        }
+        .upload-icon {
+            font-size: 36px; margin-bottom: 10px;
+            display: block;
+        }
+        .upload-card h3 {
+            font-size: 15px; font-weight: 700;
+            color: var(--dark); margin-bottom: 5px;
+        }
+        .upload-card p {
+            font-size: 12px; color: var(--mid);
+        }
+        .upload-filename {
+            display: none;
+            margin-top: 10px;
+            font-size: 12px; font-weight: 600;
+            color: var(--tan2);
+            background: rgba(209,168,75,.1);
+            border-radius: 8px; padding: 5px 10px;
+            display: inline-block;
+        }
+        .upload-filename.show { display: inline-block; }
+
+        /* Generate button */
+        .gen-btn-wrap {
+            position: relative;
+            display: flex;
+            padding: 3px;
+            border-radius: 16px;
+            /* spinning conic ring — same technique as chat.html */
+            background: conic-gradient(
+                from var(--quiz-angle, 0deg),
+                transparent   0deg,
+                #f5e3b0      50deg,
+                #d1a84b     120deg,
+                #f5e3b0     200deg,
+                #a07830     280deg,
+                transparent 360deg
+            );
+            animation: quizRingSpin 3s linear infinite;
+        }
+        @property --quiz-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+        @keyframes quizRingSpin { to { --quiz-angle: 360deg; } }
+
+        .gen-btn-inner {
+            position: absolute;
+            inset: 2px;
+            border-radius: 14px;
+            background: var(--bg);
+            z-index: 1;
+            transition: background .2s;
+        }
+        body.dark-mode .gen-btn-inner { background: #141414; }
+
+        .gen-btn {
+            position: relative; z-index: 2;
+            width: 100%;
+            padding: 13px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 13px;
+            font-size: 14px; font-weight: 700;
+            color: var(--dark);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: color .15s, transform .12s;
+        }
+        .gen-btn:active { transform: scale(.96); }
+        .gen-btn:disabled { opacity: .5; cursor: not-allowed; }
+        body.dark-mode .gen-btn { color: #f3f4f6; }
+
+        /* ── Loading state ── */
+        .loading-state {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 24px;
+            animation: scaleIn .3s cubic-bezier(.4,0,.2,1) both;
+        }
+        .loading-state.show { display: flex; }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid var(--light);
+            border-top-color: var(--tan2);
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-state p {
+            font-size: 13px; color: var(--mid); font-weight: 500;
+        }
+
+        /* ── Error banner ── */
+        .error-banner {
+            display: none;
+            background: rgba(239,68,68,.08);
+            border: 1px solid rgba(239,68,68,.25);
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #ef4444;
+            animation: scaleIn .3s cubic-bezier(.4,0,.2,1) both;
+        }
+        .error-banner.show { display: block; }
+
+        /* ─────────────────────────────────────
+           QUIZ AREA
+        ───────────────────────────────────── */
+        .quiz-area { display: none; flex-direction: column; gap: 16px; }
+        .quiz-area.show { display: flex; }
+
+        /* Progress bar */
+        .quiz-progress-wrap {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .quiz-progress-bar-bg {
+            flex: 1; height: 5px;
+            background: var(--light); border-radius: 99px; overflow: hidden;
+        }
+        .quiz-progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--tan), var(--tan2));
+            border-radius: 99px;
+            transition: width .4s cubic-bezier(.4,0,.2,1);
+        }
+        .quiz-progress-label {
+            font-size: 12px; font-weight: 700;
+            color: var(--mid); white-space: nowrap;
+        }
+
+        /* Question card */
+        .q-card {
+            background: var(--white);
+            border: 1px solid var(--light);
+            border-radius: 18px;
+            padding: 20px;
+            animation: msgBounce .38s cubic-bezier(.22,1,.36,1) both;
+        }
+        body.dark-mode .q-card { border-color: #2e2e2e; }
+
+        .q-number {
+            font-size: 10px; font-weight: 800; letter-spacing: 1.8px;
+            text-transform: uppercase; color: var(--tan2);
+            margin-bottom: 8px;
+        }
+        .q-text {
+            font-size: 14.5px; font-weight: 600;
+            color: var(--dark); line-height: 1.55;
+            margin-bottom: 16px;
+        }
+
+        /* Options */
+        .options { display: flex; flex-direction: column; gap: 9px; }
+
+        .option-btn {
+            width: 100%;
+            text-align: left;
+            background: var(--bg);
+            border: 1.5px solid var(--light);
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 13.5px;
+            color: var(--dark);
+            cursor: pointer;
+            transition: background .15s, border-color .15s, transform .1s;
+            display: flex; align-items: center; gap: 10px;
+            line-height: 1.4;
+        }
+        body.dark-mode .option-btn { background: #1a1a1a; border-color: #2e2e2e; }
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--tan2);
+            background: rgba(245,227,176,.1);
+            transform: translateX(2px);
+        }
+        .option-btn:active:not(:disabled) { transform: scale(.98); }
+
+        /* Letter badge */
+        .opt-letter {
+            width: 24px; height: 24px; flex-shrink: 0;
+            background: var(--light); border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 800;
+            color: var(--mid);
+            transition: background .15s, color .15s;
+        }
+        body.dark-mode .opt-letter { background: #2e2e2e; }
+
+        /* States after answering */
+        .option-btn.correct {
+            border-color: var(--green);
+            background: rgba(16,185,129,.08);
+        }
+        .option-btn.correct .opt-letter {
+            background: var(--green); color: #fff;
+        }
+        .option-btn.wrong {
+            border-color: var(--red);
+            background: rgba(239,68,68,.07);
+        }
+        .option-btn.wrong .opt-letter {
+            background: var(--red); color: #fff;
+        }
+        .option-btn:disabled { cursor: default; }
+
+        /* Explanation box */
+        .explanation {
+            display: none;
+            margin-top: 13px;
+            background: rgba(245,227,176,.12);
+            border-left: 3px solid var(--tan2);
+            border-radius: 0 10px 10px 0;
+            padding: 10px 12px;
+            font-size: 12.5px;
+            color: var(--mid);
+            line-height: 1.55;
+            animation: fadeSlideUp .3s cubic-bezier(.4,0,.2,1) both;
+        }
+        .explanation.show { display: block; }
+        .explanation strong { color: var(--tan2); }
+
+        /* Next / Submit button */
+        .next-btn {
+            display: none;
+            width: 100%;
+            margin-top: 14px;
+            padding: 12px;
+            background: var(--dark);
+            color: var(--tan);
+            border: none; border-radius: 12px;
+            font-size: 13.5px; font-weight: 700;
+            cursor: pointer;
+            transition: opacity .15s, transform .12s;
+            animation: fadeSlideUp .3s .05s cubic-bezier(.4,0,.2,1) both;
+        }
+        body.dark-mode .next-btn { background: #f3f4f6; color: #1f2937; }
+        .next-btn.show { display: block; }
+        .next-btn:hover { opacity: .85; }
+        .next-btn:active { transform: scale(.97); }
+
+        /* ─────────────────────────────────────
+           RESULTS SCREEN
+        ───────────────────────────────────── */
+        .results-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            animation: scaleIn .4s cubic-bezier(.22,1,.36,1) both;
+        }
+        .results-screen.show { display: flex; }
+
+        .score-ring-wrap {
+            position: relative;
+            width: 110px; height: 110px;
+        }
+        .score-ring {
+            width: 110px; height: 110px;
+            transform: rotate(-90deg);
+        }
+        .score-ring-bg  { fill: none; stroke: var(--light); stroke-width: 8; }
+        .score-ring-arc { fill: none; stroke: var(--tan2);  stroke-width: 8;
+                          stroke-linecap: round;
+                          stroke-dasharray: 283;
+                          stroke-dashoffset: 283;
+                          transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1); }
+        .score-ring-text {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        .score-ring-text .big { font-size: 22px; font-weight: 800; color: var(--dark); }
+        .score-ring-text .lbl { font-size: 10px; color: var(--mid); font-weight: 600; }
+
+        .result-title {
+            font-size: 18px; font-weight: 800; color: var(--dark); text-align: center;
+        }
+        .result-sub {
+            font-size: 13px; color: var(--mid); text-align: center; line-height: 1.5;
+        }
+
+        /* Badge */
+        .result-badge {
+            background: var(--tan);
+            color: #7a5c10;
+            font-size: 11px; font-weight: 800;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 5px 14px; border-radius: 99px;
+        }
+
+        /* Breakdown */
+        .breakdown {
+            width: 100%;
+            background: var(--white);
+            border: 1px solid var(--light);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        body.dark-mode .breakdown { border-color: #2e2e2e; }
+        .breakdown-row {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--light);
+            font-size: 12.5px;
+        }
+        body.dark-mode .breakdown-row { border-color: #2e2e2e; }
+        .breakdown-row:last-child { border-bottom: none; }
+        .bd-num {
+            width: 22px; height: 22px;
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 800;
+            flex-shrink: 0;
+        }
+        .bd-num.ok  { background: rgba(16,185,129,.15); color: var(--green); }
+        .bd-num.bad { background: rgba(239,68,68,.12);  color: var(--red); }
+        .bd-q { flex:1; color: var(--dark); line-height:1.4; }
+        .bd-tick { font-size: 14px; flex-shrink: 0; }
+
+        /* Retry */
+        .retry-btn {
+            width: 100%;
+            padding: 13px;
+            background: var(--dark);
+            color: var(--tan);
+            border: none; border-radius: 14px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer;
+            transition: opacity .15s, transform .12s;
+        }
+        body.dark-mode .retry-btn { background: #f3f4f6; color: #1f2937; }
+        .retry-btn:hover { opacity: .85; }
+        .retry-btn:active { transform: scale(.97); }
+
+        .new-pdf-btn {
+            width: 100%;
+            padding: 13px;
+            background: transparent;
+            color: var(--mid);
+            border: 1.5px solid var(--light);
+            border-radius: 14px;
+            font-size: 14px; font-weight: 600;
+            cursor: pointer;
+            transition: border-color .15s, color .15s;
+        }
+        .new-pdf-btn:hover { border-color: var(--tan2); color: var(--dark); }
+
+        /* ─────────────────────────────────────
+           SHARED ANIMATIONS
+        ───────────────────────────────────── */
+        @keyframes headerReveal  { from{opacity:0;transform:translateY(-8px);}  to{opacity:1;transform:translateY(0);} }
+        @keyframes avatarPop     { 0%{transform:scale(.8);opacity:0;} 60%{transform:scale(1.08);} 100%{transform:scale(1);opacity:1;} }
+        @keyframes scaleIn       { from{opacity:0;transform:scale(.93);}   to{opacity:1;transform:scale(1);} }
+        @keyframes fadeSlideUp   { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+        @keyframes msgBounce     { 0%{opacity:0;transform:translateY(8px) scale(.97);} 60%{transform:translateY(-2px) scale(1.01);} 100%{opacity:1;transform:translateY(0) scale(1);} }
+    </style>
+</head>
+<body>
+<div class="shell">
+
+    <!-- ── Header ── -->
+    <div class="header">
+        <div class="header-avatar">📚</div>
+        <div class="header-info">
+            <h2>Quiz Playground</h2>
+            <span>Upload a PDF — Jarvis will quiz you</span>
+        </div>
+        <button class="dark-toggle" id="darkToggle" title="Toggle dark mode">🌙</button>
+        <a class="header-back" href="/chat">← Chat</a>
+    </div>
+
+    <!-- ── Main ── -->
+    <div class="main" id="main">
+
+        <!-- Upload section -->
+        <div id="uploadSection">
+            <div class="upload-card" id="uploadCard">
+                <input type="file" id="pdfInput" accept=".pdf">
+                <span class="upload-icon">📄</span>
+                <h3>Drop your PDF here</h3>
+                <p>Tap to browse — study notes, textbook chapters, anything</p>
+                <span class="upload-filename" id="uploadFilename"></span>
+            </div>
+
+            <div style="margin-top:14px;">
+                <div class="gen-btn-wrap">
+                    <div class="gen-btn-inner"></div>
+                    <button class="gen-btn" id="genBtn" disabled>
+                        ✦ Generate Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div class="loading-state" id="loadingState">
+                <div class="spinner"></div>
+                <p>Analysing your material…</p>
+            </div>
+
+            <!-- Error -->
+            <div class="error-banner" id="errorBanner"></div>
+        </div>
+
+        <!-- Quiz area -->
+        <div class="quiz-area" id="quizArea">
+            <!-- progress -->
+            <div class="quiz-progress-wrap">
+                <div class="quiz-progress-bar-bg">
+                    <div class="quiz-progress-bar-fill" id="progressFill" style="width:0%"></div>
+                </div>
+                <span class="quiz-progress-label" id="progressLabel">0 / 0</span>
+            </div>
+
+            <!-- single question card (re-rendered per question) -->
+            <div id="questionSlot"></div>
+        </div>
+
+        <!-- Results screen -->
+        <div class="results-screen" id="resultsScreen">
+            <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 100 100">
+                    <circle class="score-ring-bg"  cx="50" cy="50" r="45"/>
+                    <circle class="score-ring-arc" cx="50" cy="50" r="45" id="scoreArc"/>
+                </svg>
+                <div class="score-ring-text">
+                    <span class="big" id="scoreBig">0/0</span>
+                    <span class="lbl">Score</span>
+                </div>
+            </div>
+            <span class="result-badge" id="resultBadge">—</span>
+            <div class="result-title" id="resultTitle">—</div>
+            <div class="result-sub"  id="resultSub">—</div>
+
+            <div class="breakdown" id="breakdown"></div>
+
+            <button class="retry-btn"   id="retryBtn">↩ Retry Same Quiz</button>
+            <button class="new-pdf-btn" id="newPdfBtn">📄 Upload New PDF</button>
+        </div>
+
+    </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ─────────────────────────────────────────────
+//  STATE
+// ─────────────────────────────────────────────
+let questions     = [];
+let currentIndex  = 0;
+let score         = 0;
+let userAnswers   = [];   // {q, chosen, correct, explanation}
+let answered      = false;
+
+// ─────────────────────────────────────────────
+//  DARK MODE (mirrors chat.html logic)
+// ─────────────────────────────────────────────
+const darkToggle = document.getElementById('darkToggle');
+if (localStorage.getItem('darkMode') === '1') {
+    document.body.classList.add('dark-mode');
+    darkToggle.textContent = '☀️';
+}
+darkToggle.addEventListener('click', () => {
+    const on = document.body.classList.toggle('dark-mode');
+    darkToggle.textContent = on ? '☀️' : '🌙';
+    localStorage.setItem('darkMode', on ? '1' : '0');
+});
+
+// ─────────────────────────────────────────────
+//  FILE PICKER
+// ─────────────────────────────────────────────
+const pdfInput      = document.getElementById('pdfInput');
+const uploadFilename= document.getElementById('uploadFilename');
+const genBtn        = document.getElementById('genBtn');
+const uploadCard    = document.getElementById('uploadCard');
+
+pdfInput.addEventListener('change', () => {
+    const f = pdfInput.files[0];
+    if (f) {
+        uploadFilename.textContent = '📎 ' + f.name;
+        uploadFilename.classList.add('show');
+        genBtn.disabled = false;
+    }
+});
+
+// Drag & drop
+uploadCard.addEventListener('dragover', e => { e.preventDefault(); uploadCard.classList.add('drag-over'); });
+uploadCard.addEventListener('dragleave', ()=> uploadCard.classList.remove('drag-over'));
+uploadCard.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadCard.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.name.endsWith('.pdf')) {
+        const dt = new DataTransfer();
+        dt.items.add(f);
+        pdfInput.files = dt.files;
+        uploadFilename.textContent = '📎 ' + f.name;
+        uploadFilename.classList.add('show');
+        genBtn.disabled = false;
+    }
+});
+
+// ─────────────────────────────────────────────
+//  GENERATE QUIZ
+// ─────────────────────────────────────────────
+genBtn.addEventListener('click', async () => {
+    const f = pdfInput.files[0];
+    if (!f) return;
+
+    // Show loading
+    genBtn.disabled = true;
+    document.getElementById('loadingState').classList.add('show');
+    document.getElementById('errorBanner').classList.remove('show');
+
+    const formData = new FormData();
+    formData.append('pdf', f);
+
+    try {
+        const res  = await fetch('/generate_quiz', { method: 'POST', body: formData });
+        const data = await res.json();
+
+        document.getElementById('loadingState').classList.remove('show');
+
+        if (!res.ok || data.error) {
+            showError(data.error || 'Something went wrong. Please try again.');
+            genBtn.disabled = false;
+            return;
+        }
+
+        questions   = data.questions;
+        currentIndex= 0;
+        score       = 0;
+        userAnswers = [];
+
+        // Hide upload section, show quiz
+        document.getElementById('uploadSection').style.display = 'none';
+        document.getElementById('quizArea').classList.add('show');
+        renderQuestion();
+
+    } catch (err) {
+        document.getElementById('loadingState').classList.remove('show');
+        showError('Network error. Please check your connection and try again.');
+        genBtn.disabled = false;
+    }
+});
+
+function showError(msg) {
+    const b = document.getElementById('errorBanner');
+    b.textContent = '⚠️ ' + msg;
+    b.classList.add('show');
+}
+
+// ─────────────────────────────────────────────
+//  RENDER QUESTION
+// ─────────────────────────────────────────────
+const LETTERS = ['A','B','C','D','E'];
+
+function renderQuestion() {
+    answered = false;
+    const q   = questions[currentIndex];
+    const tot = questions.length;
+
+    // Progress
+    const pct = (currentIndex / tot) * 100;
+    document.getElementById('progressFill').style.width  = pct + '%';
+    document.getElementById('progressLabel').textContent = currentIndex + ' / ' + tot;
+
+    const slot = document.getElementById('questionSlot');
+    slot.innerHTML = '';
+
+    const card = document.createElement('div');
+    card.className = 'q-card';
+
+    card.innerHTML = `
+        <div class="q-number">Question ${currentIndex + 1} of ${tot}</div>
+        <div class="q-text">${escHtml(q.question)}</div>
+        <div class="options" id="optionsList"></div>
+        <div class="explanation" id="explanation"></div>
+        <button class="next-btn" id="nextBtn">
+            ${currentIndex + 1 < tot ? 'Next Question →' : 'See Results 🎉'}
+        </button>
+    `;
+
+    slot.appendChild(card);
+
+    const optList = document.getElementById('optionsList');
+    q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="opt-letter">${LETTERS[i]}</span>${escHtml(opt)}`;
+        btn.addEventListener('click', () => handleAnswer(opt, btn));
+        optList.appendChild(btn);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+
+    // Scroll to top of question
+    slot.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function handleAnswer(chosen, clickedBtn) {
+    if (answered) return;
+    answered = true;
+
+    const q       = questions[currentIndex];
+    const isRight = chosen === q.answer;
+    if (isRight) score++;
+
+    const allBtns = document.querySelectorAll('#optionsList .option-btn');
+    allBtns.forEach(btn => {
+        btn.disabled = true;
+        const txt = btn.textContent.slice(1).trim(); // strip letter
+        if (txt === q.answer) {
+            btn.classList.add('correct');
+        } else if (btn === clickedBtn && !isRight) {
+            btn.classList.add('wrong');
+        }
+    });
+
+    // Store answer
+    userAnswers.push({
+        question:    q.question,
+        chosen,
+        correct:     q.answer,
+        right:       isRight,
+        explanation: q.explanation
+    });
+
+    // Show explanation
+    const expBox = document.getElementById('explanation');
+    expBox.innerHTML = `<strong>${isRight ? '✅ Correct!' : '❌ Incorrect'}</strong> ${escHtml(q.explanation)}`;
+    expBox.classList.add('show');
+
+    // Show next button
+    document.getElementById('nextBtn').classList.add('show');
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+        renderQuestion();
+    } else {
+        showResults();
+    }
+}
+
+// ─────────────────────────────────────────────
+//  RESULTS
+// ─────────────────────────────────────────────
+function showResults() {
+    // Update progress to 100%
+    document.getElementById('progressFill').style.width  = '100%';
+    document.getElementById('progressLabel').textContent = questions.length + ' / ' + questions.length;
+
+    document.getElementById('quizArea').classList.remove('show');
+    const rs = document.getElementById('resultsScreen');
+    rs.classList.add('show');
+
+    const tot = questions.length;
+    const pct = Math.round((score / tot) * 100);
+
+    // Score ring
+    document.getElementById('scoreBig').textContent = score + '/' + tot;
+    const arc = document.getElementById('scoreArc');
+    const circumference = 2 * Math.PI * 45; // ≈ 283
+    setTimeout(() => {
+        arc.style.strokeDashoffset = circumference * (1 - score / tot);
+    }, 100);
+
+    // Badge + title
+    let badge, title, sub;
+    if (pct === 100)      { badge='🏆 Perfect'; title='Flawless!';         sub='You nailed every single question. Incredible! 🎉'; }
+    else if (pct >= 80)   { badge='🌟 Excellent'; title='Outstanding work!'; sub='You really know this material well. Keep it up!'; }
+    else if (pct >= 60)   { badge='👍 Good'; title='Solid effort!';         sub='You\'re getting there. Review the ones you missed.'; }
+    else if (pct >= 40)   { badge='📖 Keep Going'; title='Almost there!';   sub='A bit more revision and you\'ll crush this. 💪'; }
+    else                  { badge='📚 Study More'; title='Needs work!';      sub='Go back to the material and try again. You\'ve got this!'; }
+
+    document.getElementById('resultBadge').textContent = badge;
+    document.getElementById('resultTitle').textContent = title;
+    document.getElementById('resultSub').textContent   = sub;
+
+    // Breakdown
+    const bd = document.getElementById('breakdown');
+    bd.innerHTML = '';
+    userAnswers.forEach((a, i) => {
+        const row = document.createElement('div');
+        row.className = 'breakdown-row';
+        row.innerHTML = `
+            <div class="bd-num ${a.right ? 'ok' : 'bad'}">${i + 1}</div>
+            <div class="bd-q">${escHtml(a.question.length > 55 ? a.question.slice(0,55)+'…' : a.question)}</div>
+            <div class="bd-tick">${a.right ? '✅' : '❌'}</div>
+        `;
+        bd.appendChild(row);
+    });
+
+    rs.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ─────────────────────────────────────────────
+//  RETRY / NEW PDF
+// ─────────────────────────────────────────────
+document.getElementById('retryBtn').addEventListener('click', () => {
+    currentIndex = 0;
+    score        = 0;
+    userAnswers  = [];
+
+    document.getElementById('resultsScreen').classList.remove('show');
+    document.getElementById('quizArea').classList.add('show');
+
+    // Reset arc
+    document.getElementById('scoreArc').style.strokeDashoffset = '283';
+
+    renderQuestion();
+});
+
+document.getElementById('newPdfBtn').addEventListener('click', () => {
+    questions    = [];
+    currentIndex = 0;
+    score        = 0;
+    userAnswers  = [];
+
+    document.getElementById('resultsScreen').classList.remove('show');
+    document.getElementById('quizArea').classList.remove('show');
+    document.getElementById('uploadSection').style.display = '';
+    document.getElementById('questionSlot').innerHTML = '';
+    document.getElementById('progressFill').style.width  = '0%';
+    document.getElementById('progressLabel').textContent = '0 / 0';
+    document.getElementById('scoreArc').style.strokeDashoffset = '283';
+    pdfInput.value = '';
+    uploadFilename.classList.remove('show');
+    uploadFilename.textContent = '';
+    genBtn.disabled = true;
+    document.getElementById('errorBanner').classList.remove('show');
+});
+
+// ─────────────────────────────────────────────
+//  UTILS
+// ─────────────────────────────────────────────
+function escHtml(str) {
+    return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
