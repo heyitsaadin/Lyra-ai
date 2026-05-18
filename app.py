@@ -769,7 +769,9 @@ def admin_verify_code():
     data = request.get_json(silent=True) or {}
     code = data.get("code", "").strip()
     ok = (code == OWNER_CODE)
-    if not ok:
+    if ok:
+        session["chat_unlocked"] = True
+    else:
         send_discord_alert("ADMIN", "Wrong owner code entered for chat unlock", code)
     return json.dumps({"ok": ok}), 200, {"Content-Type": "application/json"}
 
