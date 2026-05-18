@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, session
 import os, requests, secrets, re
 from datetime import datetime, timezone, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -1129,11 +1129,6 @@ Rules: Array only. No markdown. Do NOT repeat: {prev}"""
     }), 200, {"Content-Type": "application/json"}
 
 
-import google.generativeai as genai
-import PIL.Image
-import io
-
-from flask import Flask, render_template, request, redirect, session, jsonify
 
 # Then change all returns in send_image to:
 @app.route("/send_image", methods=["POST"])
