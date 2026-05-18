@@ -1821,16 +1821,15 @@
             fetch('/send_image', { method: 'POST', body: fd })
                 .then(r => r.json())
                 .then(data => {
-                    c.typing.style.display = 'none';
-                    c.btn.disabled = false; c.btn.style.opacity = '1';
-                    if (data.reply) {
-                        const bubble = makeBubble({ sender: 'Jarvis', text: data.reply }, true, c.chat);
-                        bubble.classList.add('msg-enter');
-                        c.chat.appendChild(bubble);
-                        c.chat.appendChild(c.typing);
-                        c.chat.scrollTop = c.chat.scrollHeight;
-                    }
-                })
+    c.typing.style.display = 'none';
+    c.btn.disabled = false; c.btn.style.opacity = '1';
+    const msg = data.reply || data.error || 'No response received';
+    const bubble = makeBubble({ sender: 'Jarvis', text: msg }, true, c.chat);
+    bubble.classList.add('msg-enter');
+    c.chat.appendChild(bubble);
+    c.chat.appendChild(c.typing);
+    c.chat.scrollTop = c.chat.scrollHeight;
+})
                 .catch(() => {
                     c.typing.style.display = 'none';
                     c.btn.disabled = false; c.btn.style.opacity = '1';
