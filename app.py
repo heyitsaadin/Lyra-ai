@@ -1097,10 +1097,13 @@ Rules: Array only. No markdown. Do NOT repeat: {prev}"""
                 qs = parsed.get("questions", [])
                 if isinstance(qs, list):
                     all_questions.extend(qs)
+                    time.sleep(2)
             elif isinstance(parsed, list):
                 all_questions.extend(parsed)
+                time.sleep(2)
             elif isinstance(parsed, dict) and "questions" in parsed:
                 all_questions.extend(parsed["questions"])
+                time.sleep(2)
         except Exception as e:
             if not all_questions:
                 return _json.dumps({"error": f"Exam generation failed: {str(e)}"}), 500, {"Content-Type": "application/json"}
