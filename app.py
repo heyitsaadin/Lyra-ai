@@ -1193,6 +1193,11 @@ def page_not_found(e):
 def server_error(e):
     return render_template("500.html"), 500
 
+
+@app.route("/test500")
+def test500():
+    raise Exception("test")
+
 init_db()
 
 if __name__ == "__main__":
