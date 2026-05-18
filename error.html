@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Error {{ error_code or '404' }}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;font-family:'Nunito',sans-serif;}
+
+    /* ── SCENE BACKGROUND ── */
+    body {
+      background: #e8f5e9;
+      position: relative;
+    }
+
+    /* Big background text watermark */
+    .bg-text {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(140px, 36vw, 320px);
+      color: rgba(180, 210, 180, 0.55);
+      white-space: nowrap;
+      line-height: 1;
+      letter-spacing: 8px;
+      user-select: none;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GROUND ── */
+    .ground {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 28%;
+      background: linear-gradient(180deg, #a5d6a7, #81c784);
+      z-index: 1;
+    }
+    .ground::before {
+      content: '';
+      position: absolute; top: -22px; left: -5%; right: -5%; height: 50px;
+      background: #a5d6a7;
+      border-radius: 50%;
+    }
+
+    /* ── ROCKS ── */
+    .rock {
+      position: fixed; bottom: 24%; z-index: 2;
+      background: #bdbdbd; border-radius: 50%;
+    }
+    .rock-l { width: 120px; height: 110px; left: 5%; background: #c8c8c8; }
+    .rock-l::before {
+      content: ''; position: absolute;
+      width: 80px; height: 75px; background: #c8c8c8;
+      border-radius: 50%; bottom: 0; right: -32px;
+    }
+    .rock-r { width: 140px; height: 125px; right: 4%; background: #bdbdbd; }
+    .rock-r::before {
+      content: ''; position: absolute;
+      width: 90px; height: 80px; background: #bdbdbd;
+      border-radius: 50%; bottom: 0; left: -34px;
+    }
+
+    /* ── BUSHES ── */
+    .bush { position: fixed; bottom: 25%; z-index: 3; display: flex; align-items: flex-end; }
+    .bb { background: #4caf50; border-radius: 50%; }
+    .bl { left: 14%; }
+    .bl .bb:nth-child(1) { width:40px; height:40px; background:#66bb6a; }
+    .bl .bb:nth-child(2) { width:54px; height:54px; background:#4caf50; margin: 0 -6px; }
+    .bl .bb:nth-child(3) { width:38px; height:38px; background:#43a047; }
+    .br { right: 14%; }
+    .br .bb:nth-child(1) { width:38px; height:38px; background:#66bb6a; }
+    .br .bb:nth-child(2) { width:52px; height:52px; background:#4caf50; margin: 0 -5px; }
+    .br .bb:nth-child(3) { width:40px; height:40px; background:#43a047; }
+
+    /* ── MAIN SVG STAGE ── */
+    .stage {
+      position: fixed;
+      bottom: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(560px, 98vw);
+      z-index: 10;
+    }
+    .stage svg { width: 100%; height: auto; overflow: visible; }
+
+    /* ── TEXT OVERLAY (bottom) ── */
+    .bottom-text {
+      position: fixed;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 20;
+      animation: textIn 0.7s 0.3s ease both;
+    }
+    @keyframes textIn {
+      from { opacity:0; transform: translateX(-50%) translateY(12px); }
+      to   { opacity:1; transform: translateX(-50%) translateY(0); }
+    }
+    .bottom-text p {
+      font-size: 0.95rem; font-weight: 800;
+      color: #33691e; margin-bottom: 14px;
+      letter-spacing: 0.3px;
+    }
+    .btn-home {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 32px;
+      background: #43a047; color: white;
+      font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 900;
+      border: none; border-radius: 50px; cursor: pointer; text-decoration: none;
+      box-shadow: 0 5px 0 #2e7d32;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-home:hover  { transform: translateY(-3px); box-shadow: 0 8px 0 #2e7d32; }
+    .btn-home:active { transform: translateY(2px);  box-shadow: 0 2px 0 #2e7d32; }
+
+    /* ── ANIMATIONS ── */
+
+    /* Caveman bobs normally */
+    .caveman-g {
+      animation: bob 1.8s ease-in-out infinite;
+      transform-origin: 260px 280px;
+    }
+    @keyframes bob {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+
+    /* Shock jolt - triggered by JS */
+    .caveman-g.jolt {
+      animation: jolt 0.7s ease-in-out;
+      transform-origin: 260px 280px;
+    }
+    @keyframes jolt {
+      0%         { transform: translateY(0) rotate(0deg); }
+      20%        { transform: translateY(-14px) rotate(-5deg); }
+      40%        { transform: translateY(-18px) rotate(5deg); }
+      60%        { transform: translateY(-10px) rotate(-3deg); }
+      80%        { transform: translateY(-5px)  rotate(2deg); }
+      100%       { transform: translateY(0) rotate(0deg); }
+    }
+
+    /* Jaw chewing */
+    .jaw-g {
+      animation: chew 0.55s ease-in-out infinite;
+      transform-origin: 260px 158px;
+    }
+    @keyframes chew {
+      0%,100% { transform: rotate(0deg); }
+      50%      { transform: rotate(9deg); }
+    }
+
+    /* Eyes normal */
+    .eye-normal { opacity: 1; transition: opacity 0.05s; }
+    /* Eyes shocked */
+    .eye-shock  { opacity: 0; transition: opacity 0.05s; }
+
+    /* Shock glow flash */
+    .shock-glow {
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.05s;
+    }
+
+    /* Lightning arcs */
+    .arc {
+      opacity: 0; transition: opacity 0.05s;
+      fill: none; stroke: #ffd600; stroke-width: 4;
+      stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* Bite sparks */
+    .bspark {
+      opacity: 0; transition: opacity 0.05s;
+    }
+
+    /* Shock stars */
+    .sstar { opacity: 0; transition: opacity 0.05s; font-size: 20px; }
+
+    /* Smoke puffs */
+    .smoke {
+      opacity: 0;
+      animation: smokePuff 1.8s ease-out infinite;
+    }
+    .smoke:nth-child(2) { animation-delay: 0.55s; }
+    .smoke:nth-child(3) { animation-delay: 1.1s; }
+    @keyframes smokePuff {
+      0%   { opacity:0; transform:scale(0.2) translateY(0); }
+      25%  { opacity:0.65; transform:scale(0.9) translateY(-10px); }
+      65%  { opacity:0.35; transform:scale(1.3) translateY(-24px); }
+      100% { opacity:0; transform:scale(1.7) translateY(-42px); }
+    }
+
+    /* Number shake class */
+    .bg-text.shake {
+      animation: numShake 0.08s ease-in-out infinite alternate;
+    }
+    @keyframes numShake {
+      from { transform: translate(-50%,-50%) rotate(-1.5deg) scale(1.01); }
+      to   { transform: translate(-50%,-50%) rotate( 1.5deg) scale(1.02); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BIG WATERMARK TEXT -->
+  <div class="bg-text" id="bgText">ERROR {{ error_code or '404' }}</div>
+
+  <!-- GROUND + ROCKS + BUSHES -->
+  <div class="ground"></div>
+  <div class="rock rock-l"></div>
+  <div class="rock rock-r"></div>
+  <div class="bush bl"><div class="bb"></div><div class="bb"></div><div class="bb"></div></div>
+  <div class="bush br"><div class="bb"></div><div class="bb"></div><div class="bb"></div></div>
+
+  <!-- SVG CAVEMAN STAGE -->
+  <div class="stage">
+   <svg viewBox="0 0 520 310" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- ══ THICK ROUNDED CABLE ══ -->
+    <!-- Left portion: from left edge to left hand -->
+    <path d="M -10,215  C 30,215 55,210 85,205 C 115,200 130,198 152,194"
+          fill="none" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+    <!-- Highlight on cable left -->
+    <path d="M -10,210  C 30,210 55,206 85,201 C 115,196 130,194 150,190"
+          fill="none" stroke="#424242" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+
+    <!-- Right portion: from mouth exit rightward -->
+    <path d="M 188,188  C 220,182 280,172 340,170 C 400,168 450,170 530,170"
+          fill="none" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+    <!-- Highlight on cable right -->
+    <path d="M 188,184  C 220,178 280,168 340,166 C 400,164 450,166 530,166"
+          fill="none" stroke="#424242" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+
+    <!-- Bite sparks at chew point -->
+    <g id="biteSparks" transform="translate(170,191)">
+      <line class="bspark" id="bs1" x1="0" y1="0" x2="-13" y2="-18" stroke="#ffd600" stroke-width="4" stroke-linecap="round"/>
+      <line class="bspark" id="bs2" x1="0" y1="0" x2=" 14" y2="-14" stroke="#fff176" stroke-width="3.5" stroke-linecap="round"/>
+      <line class="bspark" id="bs3" x1="0" y1="0" x2="-8"  y2=" 13" stroke="#ffd600" stroke-width="3" stroke-linecap="round"/>
+      <circle class="bspark" id="bs4" cx="0" cy="0" r="8" fill="#fff9c4" opacity="0.9"/>
+    </g>
+
+    <!-- ══ CAVEMAN ══ -->
+    <g class="caveman-g" id="cavemanG">
+
+      <!-- Ground shadow -->
+      <ellipse cx="260" cy="298" rx="62" ry="13" fill="rgba(0,0,0,0.1)"/>
+
+      <!-- LEGS -->
+      <rect x="232" y="245" width="28" height="46" rx="13" fill="#8d6e63"/>
+      <rect x="264" y="245" width="28" height="46" rx="13" fill="#8d6e63"/>
+      <!-- Shoes -->
+      <ellipse cx="246" cy="292" rx="22" ry="9" fill="#4e342e"/>
+      <ellipse cx="278" cy="292" rx="22" ry="9" fill="#4e342e"/>
+
+      <!-- LOIN CLOTH -->
+      <path d="M 223,205 Q 228,258 246,265 L 260,253 L 274,265 Q 292,258 297,205 Z"
+            fill="#f57f17" stroke="#e65100" stroke-width="2.5"/>
+      <circle cx="248" cy="230" r="7" fill="#e65100" opacity="0.45"/>
+      <circle cx="270" cy="238" r="6" fill="#e65100" opacity="0.45"/>
+      <circle cx="260" cy="220" r="5" fill="#e65100" opacity="0.45"/>
+
+      <!-- BODY -->
+      <rect x="220" y="175" width="80" height="88" rx="24" fill="#ffb74d" stroke="#e65100" stroke-width="2.5"/>
+      <!-- Belly button -->
+      <circle cx="260" cy="228" r="5" fill="#ff8f00" opacity="0.55"/>
+      <!-- Chest hair -->
+      <path d="M 238,190 Q 244,186 250,190" fill="none" stroke="#6d4c41" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 252,188 Q 258,184 264,188" fill="none" stroke="#6d4c41" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 266,190 Q 272,186 278,190" fill="none" stroke="#6d4c41" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 244,200 Q 250,196 256,200" fill="none" stroke="#6d4c41" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M 258,198 Q 264,194 270,198" fill="none" stroke="#6d4c41" stroke-width="2.5" stroke-linecap="round"/>
+
+      <!-- LEFT ARM — holding cable, pointing left -->
+      <path d="M 224,196 C 198,200 174,198 158,192"
+            fill="none" stroke="#ffb74d" stroke-width="28" stroke-linecap="round"/>
+      <path d="M 224,196 C 198,200 174,198 158,192"
+            fill="none" stroke="#e65100" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+      <!-- Left hand (fist gripping cable) -->
+      <ellipse cx="153" cy="192" rx="18" ry="16" fill="#ffb74d" stroke="#e65100" stroke-width="2"/>
+      <path d="M 140,184 Q 136,175 141,172" fill="none" stroke="#ffb74d" stroke-width="9" stroke-linecap="round"/>
+      <path d="M 146,180 Q 143,171 150,169" fill="none" stroke="#ffb74d" stroke-width="9" stroke-linecap="round"/>
+      <path d="M 154,178 Q 152,169 159,169" fill="none" stroke="#ffb74d" stroke-width="9" stroke-linecap="round"/>
+      <path d="M 162,181 Q 164,172 170,174" fill="none" stroke="#ffb74d" stroke-width="9" stroke-linecap="round"/>
+
+      <!-- RIGHT ARM — up/bent, triumphant -->
+      <path d="M 296,196 C 318,186 326,178 316,172"
+            fill="none" stroke="#ffb74d" stroke-width="28" stroke-linecap="round"/>
+      <path d="M 296,196 C 318,186 326,178 316,172"
+            fill="none" stroke="#e65100" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+
+      <!-- NECK -->
+      <rect x="247" y="158" width="26" height="28" rx="11" fill="#ffb74d" stroke="#e65100" stroke-width="1.5"/>
+
+      <!-- HEAD -->
+      <ellipse cx="260" cy="128" rx="56" ry="58" fill="#ffb74d" stroke="#e65100" stroke-width="2.5"/>
+
+      <!-- HAIR -->
+      <path d="M 210,115 C 207,80 216,50 228,44
+               C 236,40 234,65 240,60
+               C 244,56 247,38 254,34
+               C 260,30 258,56 264,52
+               C 270,48 270,30 277,34
+               C 284,38 282,60 287,62
+               C 292,65 291,42 297,48
+               C 306,56 310,85 308,115"
+            fill="#5d4037" stroke="#3e2723" stroke-width="2"/>
+      <!-- hair shine -->
+      <path d="M 232,78 Q 237,62 239,72" fill="none" stroke="#795548" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M 253,68 Q 258,52 260,63" fill="none" stroke="#795548" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M 272,66 Q 277,51 279,62" fill="none" stroke="#795548" stroke-width="3.5" stroke-linecap="round"/>
+
+      <!-- BEARD -->
+      <path d="M 218,148 C 214,164 219,184 234,192
+               C 248,200 272,200 286,192
+               C 301,184 306,164 302,148"
+            fill="#6d4c41" stroke="#4e342e" stroke-width="2"/>
+      <!-- beard lines -->
+      <path d="M 225,158 Q 228,172 233,180" fill="none" stroke="#5d4037" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+      <path d="M 236,160 Q 239,175 241,182" fill="none" stroke="#5d4037" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+      <path d="M 250,161 Q 252,177 252,183" fill="none" stroke="#5d4037" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+      <path d="M 265,161 Q 267,177 267,183" fill="none" stroke="#5d4037" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+      <path d="M 278,158 Q 280,172 279,178" fill="none" stroke="#5d4037" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+      <path d="M 290,154 Q 292,165 291,170" fill="none" stroke="#5d4037" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+
+      <!-- EYEBROWS (worried) -->
+      <path d="M 226,100 Q 237,93 246,98"  fill="none" stroke="#4e342e" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="M 274,98  Q 283,93 292,100" fill="none" stroke="#4e342e" stroke-width="5.5" stroke-linecap="round"/>
+
+      <!-- EYES NORMAL -->
+      <g id="eyeNormal" class="eye-normal">
+        <circle cx="237" cy="114" r="11" fill="white" stroke="#333" stroke-width="2"/>
+        <circle cx="283" cy="114" r="11" fill="white" stroke="#333" stroke-width="2"/>
+        <circle cx="238" cy="115" r="5.5" fill="#222"/>
+        <circle cx="284" cy="115" r="5.5" fill="#222"/>
+        <circle cx="240" cy="112" r="2.5" fill="white"/>
+        <circle cx="286" cy="112" r="2.5" fill="white"/>
+      </g>
+
+      <!-- EYES SHOCKED (bulging) -->
+      <g id="eyeShock" class="eye-shock">
+        <circle cx="237" cy="114" r="15" fill="white" stroke="#222" stroke-width="2"/>
+        <circle cx="283" cy="114" r="15" fill="white" stroke="#222" stroke-width="2"/>
+        <circle cx="237" cy="114" r="8"  fill="#111"/>
+        <circle cx="283" cy="114" r="8"  fill="#111"/>
+        <circle cx="239" cy="110" r="3.5" fill="white"/>
+        <circle cx="285" cy="110" r="3.5" fill="white"/>
+      </g>
+
+      <!-- MOUTH + JAW (chewing cable) -->
+      <!-- Upper lip / teeth fixed -->
+      <rect x="241" y="150" width="13" height="11" rx="3.5" fill="white" stroke="#e0e0e0" stroke-width="1"/>
+      <rect x="256" y="150" width="13" height="11" rx="3.5" fill="white" stroke="#e0e0e0" stroke-width="1"/>
+      <rect x="271" y="150" width="11" height="10" rx="3" fill="white" stroke="#e0e0e0" stroke-width="1"/>
+
+      <!-- LOWER JAW group (animated) -->
+      <g class="jaw-g">
+        <!-- lower jaw skin -->
+        <path d="M 233,162 Q 260,170 287,162 Q 287,174 260,178 Q 233,174 233,162 Z"
+              fill="#ffb74d" stroke="#e65100" stroke-width="1.5"/>
+        <!-- lower teeth -->
+        <rect x="242" y="161" width="12" height="10" rx="3" fill="white" stroke="#e0e0e0" stroke-width="1"/>
+        <rect x="257" y="161" width="12" height="10" rx="3" fill="white" stroke="#e0e0e0" stroke-width="1"/>
+        <rect x="271" y="161" width="10" height="9"  rx="3" fill="white" stroke="#e0e0e0" stroke-width="1"/>
+      </g>
+
+      <!-- Cable in mouth -->
+      <path d="M 186,190 C 200,184 215,175 232,165"
+            fill="none" stroke="#1a1a1a" stroke-width="14" stroke-linecap="round"/>
+      <path d="M 186,186 C 200,180 215,172 230,162"
+            fill="none" stroke="#424242" stroke-width="4" stroke-linecap="round" opacity="0.45"/>
+
+      <!-- ══ SHOCK EFFECTS ══ -->
+
+      <!-- Body glow -->
+      <ellipse id="shockGlow" class="shock-glow" cx="260" cy="220" rx="56" ry="72"
+               fill="#ffd600" style="filter:blur(10px);"/>
+
+      <!-- Electric arcs -->
+      <g id="arcs">
+        <path class="arc" id="arc1" d="M 200,140 L 190,128 L 203,118 L 192,106"/>
+        <path class="arc" id="arc2" d="M 320,140 L 332,128 L 318,116 L 330,104"/>
+        <path class="arc" id="arc3" d="M 240,72  L 230,58  L 244,46  L 234,32"/>
+        <path class="arc" id="arc4" d="M 280,70  L 292,56  L 278,44  L 290,30"/>
+      </g>
+
+      <!-- Shock stars/emojis -->
+      <text id="ss1" class="sstar" x="185" y="108" text-anchor="middle">⭐</text>
+      <text id="ss2" class="sstar" x="336" y="108" text-anchor="middle">⚡</text>
+      <text id="ss3" class="sstar" x="260" y="54"  text-anchor="middle">💥</text>
+
+      <!-- Smoke (always subtle, from top of head) -->
+      <g transform="translate(248,70)">
+        <circle class="smoke" cx="0"  cy="0"  r="11" fill="#9e9e9e" opacity="0.6"/>
+        <circle class="smoke" cx="14" cy="-6" r="9"  fill="#bdbdbd" opacity="0.6"/>
+        <circle class="smoke" cx="7"  cy="-18" r="7" fill="#e0e0e0" opacity="0.6"/>
+      </g>
+
+    </g><!-- end caveman -->
+   </svg>
+  </div><!-- end stage -->
+
+  <!-- BOTTOM TEXT + BUTTON -->
+  <div class="bottom-text">
+    <p>
+      {% if error_code == 500 %}
+        The server chewed the wrong cable 🔌 We're on it!
+      {% else %}
+        The page you are looking for is not available!
+      {% endif %}
+    </p>
+    <a href="/" class="btn-home">🏠 Go to Home</a>
+  </div>
+
+  <script>
+    const man       = document.getElementById('cavemanG');
+    const bgText    = document.getElementById('bgText');
+    const eyeN      = document.getElementById('eyeNormal');
+    const eyeS      = document.getElementById('eyeShock');
+    const glow      = document.getElementById('shockGlow');
+    const arcs      = document.querySelectorAll('.arc');
+    const stars     = document.querySelectorAll('.sstar');
+    const bsparks   = document.querySelectorAll('.bspark');
+
+    let shocking = false;
+
+    function triggerShock() {
+      if (shocking) return;
+      shocking = true;
+
+      // Switch to shocked state
+      eyeN.style.opacity = '0';
+      eyeS.style.opacity = '1';
+      glow.style.opacity = '0.55';
+      arcs.forEach(a => a.style.opacity = '1');
+      stars.forEach(s => s.style.opacity = '1');
+      bsparks.forEach(b => b.style.opacity = '1');
+      bgText.classList.add('shake');
+
+      // Jolt body
+      man.style.animation = 'none';
+      void man.offsetWidth;
+      man.style.animation = 'jolt 0.7s ease-in-out';
+
+      // Revert after 650ms
+      setTimeout(() => {
+        eyeN.style.opacity = '1';
+        eyeS.style.opacity = '0';
+        glow.style.opacity = '0';
+        arcs.forEach(a => a.style.opacity = '0');
+        stars.forEach(s => s.style.opacity = '0');
+        bsparks.forEach(b => b.style.opacity = '0');
+        bgText.classList.remove('shake');
+
+        // Resume normal bob
+        man.style.animation = 'none';
+        void man.offsetWidth;
+        man.style.animation = 'bob 1.8s ease-in-out infinite';
+        shocking = false;
+      }, 650);
+    }
+
+    // Fire shock every 2.2s
+    setInterval(triggerShock, 2200);
+    setTimeout(triggerShock, 800); // first shock quick
+
+    // Cursor spark trail
+    const cs = document.createElement('style');
+    cs.textContent = `@keyframes sf{from{opacity:1;transform:scale(1)translateY(0)}to{opacity:0;transform:scale(.2)translateY(-22px)}}`;
+    document.head.appendChild(cs);
+    document.addEventListener('mousemove', e => {
+      if (Math.random() > 0.55) return;
+      const d = document.createElement('div');
+      d.textContent = ['⚡','✨','💥','⭐'][Math.floor(Math.random()*4)];
+      d.style.cssText = `position:fixed;left:${e.clientX-10}px;top:${e.clientY-10}px;font-size:${Math.random()*10+10}px;pointer-events:none;z-index:9999;animation:sf 0.6s ease forwards;`;
+      document.body.appendChild(d);
+      setTimeout(() => d.remove(), 620);
+    });
+  </script>
+</body>
+</html>
