@@ -487,7 +487,7 @@ def _ensure_session(user_msg):
     return sid
 
 
-@app.route("/chat", methods=["GET"])
+@app.route("/chat", methods=["GET", "POST"])
 def chat():
     if "user" not in session:
         return redirect("/")
