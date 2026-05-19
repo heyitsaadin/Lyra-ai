@@ -1158,10 +1158,10 @@ def send_image():
         import base64
 
         # ── compress image helper ────────────────────────────────
-    def compress_image(raw_bytes, max_kb=2000):
-    import io
-    from PIL import Image as PILImage
-    img = PILImage.open(io.BytesIO(raw_bytes)).convert("RGB")
+def compress_image(raw_bytes, max_kb=2000):
+            import io
+            from PIL import Image as PILImage
+            img = PILImage.open(io.BytesIO(raw_bytes)).convert("RGB")
             quality = 85
             while True:
                 buf = io.BytesIO()
