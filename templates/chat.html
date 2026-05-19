@@ -160,6 +160,7 @@
         body.dark-mode .chip        { background:#2e2e2e; border-color:#3a3a3a; color:#d1d5db; }
         body.dark-mode .msg.you     { background:#3a2e10; color:#f5e3b0; }
         body.dark-mode .msg.jarvis  { background:#1e1e1e; color:#e5e7eb; border-color:#2e2e2e; }
+        body.dark-mode .msg.you.img-bubble span { color: #f5e3b0; }
         body.dark-mode .msg.jarvis strong { color:#f9fafb; }
         body.dark-mode .msg.jarvis code   { background:#2a2a2a; color:#f87171; }
         body.dark-mode .typing-bubble     { background:#1e1e1e; border-color:#2e2e2e; }
@@ -1807,7 +1808,7 @@
             const caption = c.textInput.value.trim();
             const thumbSrc = c.thumb.src;
             const imgBubble = document.createElement('div');
-            imgBubble.className = 'msg msg-you msg-enter';
+            imgBubble.className = 'msg you msg-enter';
             imgBubble.innerHTML = '<div class="bubble"><img src="' + thumbSrc + '" style="max-width:180px;border-radius:10px;display:block;' + (caption ? 'margin-bottom:6px' : '') + '">' + (caption ? '<span>' + caption + '</span>' : '') + '</div>';
             c.chat.appendChild(imgBubble);
             c.textInput.value = '';
