@@ -985,6 +985,7 @@
             <button type="button" class="attach-btn" id="mobAttachBtn" title="Attach a photo">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 <input type="file" id="mobImgInput" accept="image/*">
+                <input type="file" id="mobImgInput2" accept="image/*" style="display:none">
             </button>
             <input type="text" name="message" id="mobInput" autocomplete="off" required>
             <button type="submit" id="mobBtn">
@@ -1147,6 +1148,7 @@
                 <button type="button" class="attach-btn" id="deskAttachBtn" title="Attach a photo" style="width:44px;height:44px;border-radius:12px;flex-shrink:0;">
                     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                     <input type="file" id="deskImgInput" accept="image/*">
+                    <input type="file" id="deskImgInput2" accept="image/*" style="display:none">
                 </button>
                 <input type="text" name="message" id="deskInput" autocomplete="off" required>
                 <button type="submit" id="deskBtn">
@@ -1778,6 +1780,7 @@
             btn: document.getElementById('mobBtn'),
             textInput: document.getElementById('mobInput'),
             form: document.getElementById('mobForm')
+            input2: document.getElementById('mobImgInput2'),
         };
         const desk = {
             input: document.getElementById('deskImgInput'),
@@ -1790,6 +1793,7 @@
             btn: document.getElementById('deskBtn'),
             textInput: document.getElementById('deskInput'),
             form: document.getElementById('deskForm')
+            input2: document.getElementById('deskImgInput2'),
         };
 
         function setPreview(c, file) {
@@ -1804,40 +1808,61 @@
             c.input.value = '';
         }
         function sendImage(c) {
-            const file = c.input.files[0]; if (!file) return;
-            const caption = c.textInput.value.trim();
-            const thumbSrc = c.thumb.src;
-            const imgBubble = document.createElement('div');
-            imgBubble.className = 'msg you msg-enter';
-            imgBubble.innerHTML = '<div class="bubble"><img src="' + thumbSrc + '" style="max-width:180px;border-radius:10px;display:block;' + (caption ? 'margin-bottom:6px' : '') + '">' + (caption ? '<span style="color:inherit;display:block;">' + caption + '</span>' : '') + '</div>';
-            c.chat.appendChild(imgBubble);
-            c.textInput.value = '';
-            clearPreview(c);
-            c.btn.disabled = true; c.btn.style.opacity = '.4';
-            c.chat.appendChild(c.typing); c.typing.style.display = 'block';
-            c.chat.scrollTop = c.chat.scrollHeight;
-            const fd = new FormData();
-            fd.append('image', file);
-            if (caption) fd.append('caption', caption);
-            fetch('/send_image', { method: 'POST', body: fd })
-                .then(r => r.json())
-                .then(data => {
-    c.typing.style.display = 'none';
-    c.btn.disabled = false; c.btn.style.opacity = '1';
-    const msg = data.reply || data.error || 'No response received';
-    const bubble = makeBubble({ sender: 'Jarvis', text: msg }, true, c.chat);
-    bubble.classList.add('msg-enter');
-    c.chat.appendChild(bubble);
-    c.chat.appendChild(c.typing);
+    const file  = c.input.files[0];  if (!file) return;
+    const file2 = c.input2 && c.input2.files[0] ? c.input2.files[0] : null;
+    const caption   = c.textInput.value.trim();
+    const thumbSrc  = c.thumb.src;
+
+    const imgBubble = document.createElement('div');
+    imgBubble.className = 'msg you msg-enter';
+    let imgHTML = `<img src="${thumbSrc}" style="max-width:160px;border-radius:10px;display:block;${file2 ? 'margin-bottom:6px' : caption ? 'margin-bottom:6px' : ''}">`;
+    if (file2) {
+        const thumb2 = URL.createObjectURL(file2);
+        imgHTML += `<img src="${thumb2}" style="max-width:160px;border-radius:10px;display:block;${caption ? 'margin-bottom:6px' : ''}">`;
+    }
+    if (caption) imgHTML += `<span style="color:inherit;display:block;">${caption}</span>`;
+    imgBubble.innerHTML = `<div class="bubble">${imgHTML}</div>`;
+    c.chat.appendChild(imgBubble);
+
+    c.textInput.value = '';
+    clearPreview(c);
+    if (c.input2) c.input2.value = '';
+    c.btn.disabled = true; c.btn.style.opacity = '.4';
+    c.chat.appendChild(c.typing); c.typing.style.display = 'block';
     c.chat.scrollTop = c.chat.scrollHeight;
-})
-                .catch(() => {
-                    c.typing.style.display = 'none';
-                    c.btn.disabled = false; c.btn.style.opacity = '1';
-                    const err = makeBubble({ sender: 'Jarvis', text: 'Could not analyse the image. Try again! 😅' }, false, c.chat);
-                    c.chat.appendChild(err);
-                    c.chat.scrollTop = c.chat.scrollHeight;
-                });
+
+    const fd = new FormData();
+    fd.append('image', file);
+    if (file2) fd.append('image2', file2);
+    if (caption) fd.append('caption', caption);
+
+    fetch('/send_image', { method: 'POST', body: fd })
+        .then(r => r.json())
+        .then(data => {
+            c.typing.style.display = 'none';
+            c.btn.disabled = false; c.btn.style.opacity = '1';
+            const raw = data.reply || data.error || 'No response received';
+            if (raw.startsWith('__EDITED_IMAGE__')) {
+                const imgSrc = raw.replace('__EDITED_IMAGE__', '');
+                const editBubble = document.createElement('div');
+                editBubble.className = 'msg jarvis msg-enter';
+                editBubble.innerHTML = `<div class="bubble"><p style="font-size:12px;opacity:0.6;margin-bottom:6px;">✨ Edited image</p><img src="${imgSrc}" style="max-width:240px;border-radius:10px;display:block;margin-bottom:6px;"><a href="${imgSrc}" download="jarvis-edit.png" style="font-size:12px;color:inherit;opacity:0.7;">⬇ Download</a></div>`;
+                c.chat.appendChild(editBubble);
+            } else {
+                const bubble = makeBubble({ sender: 'Jarvis', text: raw }, true, c.chat);
+                bubble.classList.add('msg-enter');
+                c.chat.appendChild(bubble);
+            }
+            c.chat.appendChild(c.typing);
+            c.chat.scrollTop = c.chat.scrollHeight;
+        })
+        .catch(() => {
+            c.typing.style.display = 'none';
+            c.btn.disabled = false; c.btn.style.opacity = '1';
+            const err = makeBubble({ sender: 'Jarvis', text: 'Could not process the image. Try again! 😅' }, false, c.chat);
+            c.chat.appendChild(err);
+            c.chat.scrollTop = c.chat.scrollHeight;
+        });
         }
 
         mob.input.addEventListener('change', () => { if (mob.input.files[0]) setPreview(mob, mob.input.files[0]); });
