@@ -2,7 +2,7 @@
 
 A personal AI chatbot web app powered by **Groq LLaMA**, built with Flask and deployed on Vercel. Jarvis has a warm, conversational personality, supports image generation and analysis, real-time math, and a full user authentication system with a PostgreSQL backend.
 
-🔗 **Live Demo:** [jarvis-ai-aadin.vercel.app](https://jarvis-ai-aadin.vercel.app/)
+ **Live Demo:** [jarvis-ai-aadin.vercel.app](https://jarvis-ai-aadin.vercel.app/)
 
 ---
 
