@@ -2157,6 +2157,11 @@ def service_worker():
     response.headers['Cache-Control'] = 'no-cache'
     return response
 
+@app.route('/googlea35edb5a70c<rest>')
+def google_verify(rest):
+    return send_from_directory('.', 'googlea35edb5a70c' + rest)
+
+
 init_db()
 init_db_pool()
 
