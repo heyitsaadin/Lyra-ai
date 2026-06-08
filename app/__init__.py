@@ -24,9 +24,8 @@ def create_app():
     )
     
     # Initialize Database
-    with app.app_context():
-        init_db_pool()
-        init_db()
+    init_db_pool()
+    init_db()
     
     # Register Blueprints
     from app.routes.main import main_bp
