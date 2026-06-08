@@ -25,41 +25,45 @@
 <title>Jarvis Admin</title>
 <style>
 :root {
-  --bg: #f7f7f6;
-  --surface: #ffffff;
+  --bg: #f5f5f4;
+  --surface: rgba(255, 255, 255, 0.8);
+  --surface-solid: #ffffff;
   --surface2: #f0f0ee;
-  --border: rgba(0,0,0,0.07);
-  --border-med: rgba(0,0,0,0.10);
-  --text: #181816;
-  --mid: #706f6c;
-  --subtle: #a0a09d;
-  --accent: #181816;
+  --border: rgba(0,0,0,0.06);
+  --border-bright: rgba(0,0,0,0.12);
+  --text: #1c1c1a;
+  --mid: #71716e;
+  --subtle: #a1a19e;
+  --accent: #1c1c1a;
   --red: #ef4444;
-  --red-dim: rgba(239,68,68,0.08);
-  --green: #22c55e;
-  --green-dim: rgba(34,197,94,0.08);
+  --red-dim: rgba(239,68,68,0.06);
+  --green: #10b981;
+  --green-dim: rgba(16,185,129,0.06);
   --amber: #f59e0b;
-  --amber-dim: rgba(245,158,11,0.08);
+  --amber-dim: rgba(245,158,11,0.06);
   --blue: #3b82f6;
-  --radius: 16px;
+  --radius: 20px;
+  --radius-md: 14px;
   --radius-sm: 10px;
-  --radius-pill: 9999px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
-  --shadow-lg: 0 12px 48px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
-  --transition: all 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --radius-pill: 99px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.02);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass: blur(12px) saturate(180%);
 }
 [data-theme="dark"] {
-  --bg: #0a0a0a;
-  --surface: #141414;
-  --surface2: #1c1c1c;
-  --border: rgba(255,255,255,0.07);
-  --border-med: rgba(255,255,255,0.11);
-  --text: #f0f0ee;
+  --bg: #090908;
+  --surface: rgba(20, 20, 19, 0.7);
+  --surface-solid: #141413;
+  --surface2: #1c1c1b;
+  --border: rgba(255,255,255,0.05);
+  --border-bright: rgba(255,255,255,0.1);
+  --text: #f5f5f4;
   --mid: #8a8a87;
   --subtle: #555553;
-  --accent: #f0f0ee;
-  --shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 4px rgba(0,0,0,0.2);
-  --shadow-lg: 0 12px 48px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+  --accent: #f5f5f4;
+  --shadow: 0 4px 20px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.2);
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-font-smoothing: antialiased; }
@@ -306,14 +310,16 @@ a { text-decoration: none; color: inherit; }
 }
 .stat-card {
   background: var(--surface);
+  backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px 20px;
+  padding: 22px 24px;
   box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 4px;
 }
-.stat-label { font-size: 11px; font-weight: 700; color: var(--mid); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-.stat-value { font-size: 32px; font-weight: 800; letter-spacing: -0.5px; line-height: 1; }
-.stat-sub { font-size: 12px; color: var(--mid); margin-top: 5px; }
+.stat-label { font-size: 10px; font-weight: 700; color: var(--mid); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.stat-value { font-size: 32px; font-weight: 900; letter-spacing: -0.02em; line-height: 1; color: var(--text); }
+.stat-sub { font-size: 11px; color: var(--subtle); font-weight: 500; margin-top: 2px; }
 
 /* ── CARD ── */
 .card {
@@ -384,34 +390,35 @@ tr:hover td { background: rgba(0,0,0,0.015); }
 .profile-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
 .profile-card {
   background: var(--surface);
+  backdrop-filter: var(--glass); -webkit-backdrop-filter: var(--glass);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 18px;
+  padding: 24px;
+  display: flex; flex-direction: column;
   box-shadow: var(--shadow);
 }
-.pc-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+.pc-top { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
 .pc-avatar {
-  width: 38px; height: 38px;
-  border-radius: 10px;
+  width: 48px; height: 48px;
+  border-radius: 14px;
   background: var(--surface2);
   display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 800; color: var(--mid);
+  font-size: 18px; font-weight: 800; color: var(--mid);
   flex-shrink: 0;
 }
-.pc-name { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
-.pc-meta { font-size: 11px; color: var(--mid); }
-.pc-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-.pcs-item { }
-.pcs-label { font-size: 10px; font-weight: 700; color: var(--subtle); text-transform: uppercase; letter-spacing: 0.05em; }
-.pcs-val { font-size: 20px; font-weight: 800; letter-spacing: -0.3px; }
-.topics-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.pc-name { font-size: 17px; font-weight: 800; margin-bottom: 2px; letter-spacing: -0.01em; }
+.pc-meta { font-size: 12px; color: var(--subtle); font-weight: 500; }
+.pc-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+.pcs-label { font-size: 9px; font-weight: 700; color: var(--subtle); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+.pcs-val { font-size: 22px; font-weight: 900; letter-spacing: -0.02em; }
+.topics-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
 .groq-quote {
-  font-size: 12px; color: var(--mid); font-style: italic;
-  line-height: 1.55;
-  padding: 10px 12px;
+  font-size: 13px; color: var(--mid); font-style: italic;
+  line-height: 1.6;
+  padding: 14px 16px;
   background: var(--surface2);
-  border-radius: 10px;
-  margin-bottom: 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 18px;
 }
 .pc-actions { display: flex; gap: 6px; flex-wrap: wrap; }
 

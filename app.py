@@ -2768,35 +2768,64 @@ def admin_analyse_chats(username):
     profile = get_profile(username)
     if not profile:
         return jsonify({"error": "No profile data found for this user"}), 404
+    
+    # Fetch recent chat history for better accuracy
+    sessions = get_chat_sessions(username)
+    history_snippet = ""
+    if sessions:
+        # Get up to 3 most recent sessions
+        recent_sessions = sessions[:3]
+        for s in recent_sessions:
+            msgs = _json_mod.loads(s.get("messages", "[]"))
+            # Take last 10 messages from each session
+            for m in msgs[-10:]:
+                sender = "User" if m.get("sender") == "You" else "Jarvis"
+                text = m.get("text", "")
+                # Clean up HTML and long texts
+                text = re.sub(r"<[^>]+>", "", text)
+                if len(text) > 200: text = text[:200] + "..."
+                history_snippet += f"{sender}: {text}\n"
+            history_snippet += "---\n"
+
     top_topics = profile.get("top_topics", [])
     sentiment = profile.get("sentiment", "neutral")
     msg_count = profile.get("user_messages", 0)
     avg_len = profile.get("avg_length", 0)
-    groq_summary = profile.get("groq_summary", "")
-    if not msg_count:
-        return jsonify({"error": "No usage data found for this user"}), 404
-    sys_p = """You are an AI analyst reviewing aggregated usage metadata about a user of a chatbot called Jarvis.
-You are working from pre-computed statistics only — no raw messages are available.
-Your job: produce a structured JSON report.
-Reply ONLY as raw JSON — no markdown, no explanation outside JSON.
-Format:
+    
+    sys_p = """You are an expert behavioral psychologist and data analyst for Jarvis AI.
+Your goal is to provide a deep, accurate analysis of a user based on their metadata and recent conversation snippets.
+Be specific, insightful, and professional. Avoid generic descriptions.
+
+Return ONLY a valid JSON object with this exact structure:
 {
-  "personality_summary": "2-3 sentence friendly description based on the data",
-  "top_interests": ["topic1", "topic2", "topic3"],
-  "sentiment": "one of: curious / creative / technical / casual / mixed / emotional",
-  "usage_pattern": "1 sentence on estimated usage pattern",
-  "notable_topics": ["specific subjects derived from topic tags"],
-  "risk_flags": [],
-  "recommendation": "1 sentence recommendation"
+  "personality_summary": "A deep 3-4 sentence analysis of their character, tone, and cognitive style.",
+  "top_interests": ["highly specific topic 1", "topic 2", "..."],
+  "sentiment": "curious / technical / creative / casual / formal / analytical / emotional",
+  "usage_pattern": "A detailed observation of how they interact with the AI.",
+  "notable_topics": ["specific entities, technologies, or themes mentioned"],
+  "risk_flags": ["any concerns like jailbreak attempts, extreme toxicity, or PII sharing - leave empty if none"],
+  "recommendation": "A strategic recommendation for how to better serve or manage this user."
 }"""
-    usr_p = f"Username: {username}\nTotal user messages: {msg_count} | Avg message length: {avg_len} chars\nTop topics (keyword-extracted): {top_topics}\nCurrent sentiment tag: {sentiment}\nPrevious summary: {groq_summary}\n"
+
+    usr_p = f"USER: {username}\n"
+    usr_p += f"STATS: {msg_count} messages, {avg_len} avg chars/msg, Topics: {top_topics}, Sentiment: {sentiment}\n\n"
+    usr_p += f"RECENT CONVERSATION SNIPPETS:\n{history_snippet or 'No recent history available.'}"
+    
     try:
-        raw = _groq_generate(sys_p, usr_p, max_tokens=600, temperature=0.3)
-        raw = raw.replace("```json","").replace("```","").strip()
+        # Use a more capable model for deep analysis if possible
+        raw = _groq_generate(sys_p, usr_p, model="llama-3.1-70b-versatile", max_tokens=1000, temperature=0.5)
+        raw = re.sub(r"```json\s*|\s*```", "", raw).strip()
         report = _json_mod.loads(raw)
         return jsonify({"username": username, "report": report}), 200
     except Exception as e:
-        return jsonify({"error": f"Analysis failed: {str(e)}"}), 500
+        # Fallback to 8b if 70b fails or is unavailable
+        try:
+            raw = _groq_generate(sys_p, usr_p, model="llama-3.1-8b-instant", max_tokens=800, temperature=0.4)
+            raw = re.sub(r"```json\s*|\s*```", "", raw).strip()
+            report = _json_mod.loads(raw)
+            return jsonify({"username": username, "report": report}), 200
+        except Exception as e2:
+            return jsonify({"error": f"Analysis failed: {str(e2)}"}), 500
 
 @app.route(ADMIN_BASE + "/send_notification", methods=["POST"])
 def admin_send_notification():
