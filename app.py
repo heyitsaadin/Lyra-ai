@@ -1,11 +1,6 @@
-from flask import Flask
+from app import create_app
 
-app = Flask(__name__)
+app = create_app()
 
-@app.route('/')
-def home():
-    return "Jarvis AI is currently undergoing maintenance. Please check back soon!"
-
-@app.route('/health')
-def health():
-    return "OK", 200
+# This file is kept as the entry point for Vercel deployment.
+# All application logic has been moved to the app/ directory.

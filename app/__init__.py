@@ -16,15 +16,19 @@ def create_app():
     app.config["MAX_COOKIE_SIZE"] = 4093
     
     # Initialize extensions
-    # limiter = Limiter(
-    #     get_remote_address,
-    #     app=app,
-    #     default_limits=["500 per day"],
-    #     storage_uri="memory://"
-    # )
+    limiter = Limiter(
+        get_remote_address,
+        app=app,
+        default_limits=["500 per day"],
+        storage_uri="memory://"
+    )
     
-    # Database will be initialized lazily when needed
-    pass
+    # Initialize Database
+    try:
+        init_db_pool()
+        init_db()
+    except Exception as e:
+        app.logger.error(f"Database initialization failed: {e}")
     
     # Register Blueprints
     from app.routes.main import main_bp
