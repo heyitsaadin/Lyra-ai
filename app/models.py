@@ -20,6 +20,8 @@ def init_db_pool():
 def get_db():
     if db_pool is None:
         init_db_pool()
+    if db_pool is None:
+        return None
     return db_pool.getconn()
 
 def return_db(conn):
@@ -28,6 +30,8 @@ def return_db(conn):
 
 def init_db():
     conn = get_db()
+    if conn is None:
+        return
     cur = conn.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS users    (username TEXT PRIMARY KEY, password TEXT)")
     cur.execute("CREATE TABLE IF NOT EXISTS history  (username TEXT, calculation TEXT)")
