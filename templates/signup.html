@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Mia AI - Sign Up</title>
+    <title>Jarvis AI - Sign Up</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script>
@@ -380,7 +380,7 @@
     </style>
     <script>
         /* Apply theme immediately — same key chat.html uses */
-        if (localStorage.getItem('mia-dark')) {
+        if (localStorage.getItem('jarvis-dark')) {
             document.documentElement.setAttribute('data-theme', 'dark');
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
@@ -392,12 +392,12 @@
     <div id="pageTransition"></div>
 
     <header class="header-nav">
-        <div class="brand-title">Mia AI</div>
+        <div class="brand-title">Jarvis AI</div>
     </header>
 
     <!-- Desktop left panel -->
     <aside class="desktop-panel">
-        <div class="dp-logo">Mia AI</div>
+        <div class="dp-logo">Jarvis AI</div>
         <div class="dp-body">
             <div class="dp-headline">Get<br>Started.</div>
             <p class="dp-desc">Create a free account — no email, no phone number. Just a username and you're in.</p>
@@ -460,7 +460,7 @@
                     <svg viewBox="0 0 24 24"><path d="M20 6L9 17L4 12"/></svg>
                 </div>
                 <div class="legal-text">
-                    I agree to the <span class="legal-link" id="termsLink">Privacy Policy &amp; Terms</span> of Mia AI
+                    I agree to the <span class="legal-link" id="termsLink">Privacy Policy &amp; Terms</span> of Jarvis AI
                 </div>
             </label>
             <div class="agree-error" id="agreeErrorMobile">Please agree to the Privacy Policy &amp; Terms to continue</div>
@@ -502,7 +502,7 @@
                     <svg viewBox="0 0 24 24"><path d="M20 6L9 17L4 12"/></svg>
                 </div>
                 <div class="legal-text">
-                    I agree to the <span class="legal-link" id="termsLinkDesk">Privacy Policy &amp; Terms</span> of Mia AI
+                    I agree to the <span class="legal-link" id="termsLinkDesk">Privacy Policy &amp; Terms</span> of Jarvis AI
                 </div>
             </label>
             <div class="agree-error" id="agreeErrorDesk">Please agree to the Privacy Policy &amp; Terms to continue</div>
@@ -519,13 +519,13 @@
     <div class="credit">created by Aadin</div>
 
     <script>
-        /* ── Theme: sync with chat.html (data-theme on body, mia-dark key) ── */
+        /* ── Theme: sync with chat.html (data-theme on body, jarvis-dark key) ── */
         (function () {
-            const theme = localStorage.getItem('mia-dark') ? 'dark' : 'light';
+            const theme = localStorage.getItem('jarvis-dark') ? 'dark' : 'light';
             document.body.setAttribute('data-theme', theme);
         })();
         window.addEventListener('storage', function (e) {
-            if (e.key === 'mia-dark') {
+            if (e.key === 'jarvis-dark') {
                 document.body.setAttribute('data-theme', e.newValue ? 'dark' : 'light');
             }
         });
