@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Mia AI</title>
+    <title>Jarvis</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script>
@@ -278,25 +278,25 @@
         /* old tray chip CSS removed */
 
         /* Generated image bubble */
-        .mia-img-skeleton {
+        .Jarvis-img-skeleton {
             width: 100%; aspect-ratio: 1/1; max-width: 340px; border-radius: 12px;
             background: linear-gradient(90deg, var(--ui-subtle) 25%, var(--bg-primary) 50%, var(--ui-subtle) 75%);
             background-size: 200% 100%; animation: shimmer 1.4s infinite;
             position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
         }
         @keyframes shimmer { 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
-        .mia-img-spinner {
+        .Jarvis-img-spinner {
             width: 40px; height: 40px; border: 3px solid rgba(99,102,241,.2);
             border-top-color: #6366f1; border-radius: 50%;
             animation: imgSpin 0.9s linear infinite; position: absolute;
         }
         @keyframes imgSpin { to { transform: rotate(360deg); } }
-        .mia-img-gen-label {
+        .Jarvis-img-gen-label {
             position: absolute; bottom: 18px; left: 0; right: 0;
             text-align: center; font-size: 11px; font-weight: 700;
             color: #6b7280; letter-spacing: .5px;
         }
-        .mia-img-wrap {
+        .Jarvis-img-wrap {
             display: inline-block;
             max-width: 260px;
             width: 100%;
@@ -305,11 +305,11 @@
             overflow: hidden;
             box-shadow: 0 2px 12px rgba(0,0,0,.10);
         }
-        .mia-img { width: 100%; height: auto; border-radius: 0; opacity: 0; transition: opacity .5s ease; display: block; }
-        .mia-img.loaded { opacity: 1; }
-        .mia-img-footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; gap: 8px; background: var(--ui-subtle); }
-        .mia-img-caption { font-size: 11px; color: var(--text-secondary); font-style: italic; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .mia-img-dl {
+        .Jarvis-img { width: 100%; height: auto; border-radius: 0; opacity: 0; transition: opacity .5s ease; display: block; }
+        .Jarvis-img.loaded { opacity: 1; }
+        .Jarvis-img-footer { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; gap: 8px; background: var(--ui-subtle); }
+        .Jarvis-img-caption { font-size: 11px; color: var(--text-secondary); font-style: italic; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .Jarvis-img-dl {
             display: inline-flex; align-items: center; gap: 6px;
             font-size: 12px; font-weight: 700; color: var(--bg-primary);
             cursor: pointer; padding: 7px 14px;
@@ -317,8 +317,8 @@
             border: none; border-radius: 20px;
             transition: opacity .15s, transform .1s; flex-shrink: 0;
         }
-        .mia-img-dl:hover { opacity: .8; transform: scale(1.04); }
-        .mia-img-dl svg { flex-shrink: 0; }
+        .Jarvis-img-dl:hover { opacity: .8; transform: scale(1.04); }
+        .Jarvis-img-dl svg { flex-shrink: 0; }
 
         /* ════════════════════════════════
            WEB SEARCH RESULTS
@@ -368,34 +368,34 @@
         /* ════════════════════════════════
            YOUTUBE PLAYER
         ════════════════════════════════ */
-        .mia-yt-wrap {
+        .Jarvis-yt-wrap {
             max-width: 340px;
             border-radius: 14px;
             overflow: hidden;
             background: #000;
             margin: 2px 0;
         }
-        .mia-yt-player {
+        .Jarvis-yt-player {
             position: relative;
             width: 100%;
             padding-bottom: 56.25%; /* 16:9 */
             height: 0;
             overflow: hidden;
         }
-        .mia-yt-player iframe {
+        .Jarvis-yt-player iframe {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
             border: none;
         }
-        .mia-yt-footer {
+        .Jarvis-yt-footer {
             padding: 8px 10px;
             background: var(--ui-subtle);
             display: flex;
             flex-direction: column;
             gap: 2px;
         }
-        .mia-yt-title {
+        .Jarvis-yt-title {
             font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
@@ -403,16 +403,16 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .mia-yt-channel {
+        .Jarvis-yt-channel {
             font-size: 10px;
             color: var(--text-secondary);
         }
-        .mia-yt-fallback { background: var(--ui-subtle); padding: 12px; }
-        .mia-yt-link {
+        .Jarvis-yt-fallback { background: var(--ui-subtle); padding: 12px; }
+        .Jarvis-yt-link {
             font-size: 13px; font-weight: 600;
             color: #ef4444; text-decoration: none;
         }
-        .mia-yt-link:hover { text-decoration: underline; }
+        .Jarvis-yt-link:hover { text-decoration: underline; }
 
         /* ════════════════════════════════
            IMAGE PREVIEW
@@ -1133,7 +1133,7 @@
 
             /* Add a branded logo/title to sidebar header */
             .sidebar-header::before {
-                content: 'Mia';
+                content: 'Jarvis';
                 display: block;
                 font-size: 18px;
                 font-weight: 800;
@@ -1343,11 +1343,11 @@
             </button>
             <div class="d-card">
                 <div class="d-card-icon" id="aboutCardLogo"></div>
-                <h3>Mia AI</h3>
+                <h3>Jarvis</h3>
                 <p class="ver">VERSION 1.0 · BETA</p>
-                <p>Mia is a personal AI assistant built to help with everyday tasks — questions, code, math, and more.</p>
+                <p>Jarvis is a personal AI assistant built to help with everyday tasks — questions, code, math, and more.</p>
                 <p>Powered by Groq LLaMA with a custom security layer built from scratch.</p>
-                <p class="tag">MIA CORE // <span>AADIN</span></p>
+                <p class="tag">Jarvis CORE // <span>AADIN</span></p>
             </div>
         </div>
 
@@ -1363,9 +1363,9 @@
                 </div>
                 <h3>Aadin</h3>
                 <p class="ver">DEVELOPER · CREATOR</p>
-                <p>Mia was designed and built by Aadin, a self-taught developer passionate about AI and cybersecurity.</p>
+                <p>Jarvis was designed and built by Aadin, a self-taught developer passionate about AI and cybersecurity.</p>
                 <p>Built entirely on a mobile phone — backend, security layer, and UI — as part of a vision for AI-powered secure systems.</p>
-                <p class="tag">MIA CORE // <span>AADIN</span></p>
+                <p class="tag">Jarvis CORE // <span>AADIN</span></p>
             </div>
         </div>
 
@@ -1396,7 +1396,7 @@
                 <div class="d-settings-avatar" id="settingsAvatar"></div>
                 <div>
                     <div class="d-settings-uname" id="settingsUsername">{{ username }}</div>
-                    <div class="d-settings-role">Mia User</div>
+                    <div class="d-settings-role">Jarvis User</div>
                 </div>
             </div>
             <button class="d-item" onclick="drawerGoTo('drawerSecurity')">
@@ -1813,7 +1813,7 @@
 
         const label = document.createElement('div');
         label.className = 'meta-label';
-        label.textContent = msg.sender === 'You' ? 'You' : 'Mia';
+        label.textContent = msg.sender === 'You' ? 'You' : 'Jarvis';
         row.appendChild(label);
 
         const text = document.createElement('div');
@@ -1841,12 +1841,12 @@
                 const imgPrompt = rawText.replace('[IMAGE GENERATED:', '').replace(/\]$/, '').trim();
                 const safePrompt = encodeURIComponent(imgPrompt);
                 const imgUrl = `https://image.pollinations.ai/prompt/${safePrompt}?width=768&height=768&nologo=true&enhance=true`;
-                text.innerHTML = `<div class="mia-img-wrap"><img class="mia-img" src="${imgUrl}" alt="${imgPrompt}" /><div class="mia-img-footer"><span class="mia-img-caption">🎨 ${imgPrompt} ✨</span><button class="mia-img-dl" onclick="(function(u,n){var a=document.createElement('a');a.href=u;a.download=n+'.jpg';a.click();})(this.parentElement.previousSibling.src,'mia-img')">&#8203;</button></div></div>`;
-                text.querySelectorAll('.mia-img').forEach(img => {
+                text.innerHTML = `<div class="Jarvis-img-wrap"><img class="Jarvis-img" src="${imgUrl}" alt="${imgPrompt}" /><div class="Jarvis-img-footer"><span class="Jarvis-img-caption">🎨 ${imgPrompt} ✨</span><button class="Jarvis-img-dl" onclick="(function(u,n){var a=document.createElement('a');a.href=u;a.download=n+'.jpg';a.click();})(this.parentElement.previousSibling.src,'Jarvis-img')">&#8203;</button></div></div>`;
+                text.querySelectorAll('.Jarvis-img').forEach(img => {
                     if (!img.classList.contains('loaded')) {
                         const skel = document.createElement('div');
-                        skel.className = 'mia-img-skeleton';
-                        skel.innerHTML = '<div class="mia-img-spinner"></div><span class="mia-img-gen-label">Loading image...</span>';
+                        skel.className = 'Jarvis-img-skeleton';
+                        skel.innerHTML = '<div class="Jarvis-img-spinner"></div><span class="Jarvis-img-gen-label">Loading image...</span>';
                         img.parentNode.insertBefore(skel, img);
                         img.style.display = 'none';
                         img.addEventListener('load', () => { skel.remove(); img.style.display = ''; img.classList.add('loaded'); });
@@ -1886,24 +1886,24 @@
                 row.appendChild(makeActionBar(text));
                 return row;
             }
-            if (rawText.includes('mia-yt-wrap')) {
+            if (rawText.includes('Jarvis-yt-wrap')) {
                 text.innerHTML = DOMPurify.sanitize(rawText, { ADD_TAGS: ['iframe'], ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'src', 'title'] });
                 row.appendChild(text);
                 row.appendChild(makeActionBar(text));
                 return row;
             }
-            if (rawText.includes('mia-img-wrap') || rawText.includes('mia-img-wrap')) {
+            if (rawText.includes('Jarvis-img-wrap') || rawText.includes('Jarvis-img-wrap')) {
                 // Normalize jarvis- prefix to lyra- so CSS applies
-                rawText = rawText.replace(/mia-img-wrap/g, 'mia-img-wrap').replace(/mia-img-footer/g, 'mia-img-footer').replace(/mia-img-caption/g, 'mia-img-caption').replace(/mia-img-dl/g, 'mia-img-dl').replace(/mia-img(?=[" ])/g, 'mia-img');
+                rawText = rawText.replace(/Jarvis-img-wrap/g, 'Jarvis-img-wrap').replace(/Jarvis-img-footer/g, 'Jarvis-img-footer').replace(/Jarvis-img-caption/g, 'Jarvis-img-caption').replace(/Jarvis-img-dl/g, 'Jarvis-img-dl').replace(/Jarvis-img(?=[" ])/g, 'Jarvis-img');
                 text.innerHTML = DOMPurify.sanitize(rawText);
-                text.querySelectorAll('.mia-img-dl').forEach(btn => {
+                text.querySelectorAll('.Jarvis-img-dl').forEach(btn => {
                     btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download';
                 });
-                text.querySelectorAll('.mia-img').forEach(img => {
+                text.querySelectorAll('.Jarvis-img').forEach(img => {
                     if (!img.classList.contains('loaded')) {
                         const skel = document.createElement('div');
-                        skel.className = 'mia-img-skeleton';
-                        skel.innerHTML = '<div class="mia-img-spinner"></div><span class="mia-img-gen-label">Generating image...</span>';
+                        skel.className = 'Jarvis-img-skeleton';
+                        skel.innerHTML = '<div class="Jarvis-img-spinner"></div><span class="Jarvis-img-gen-label">Generating image...</span>';
                         img.parentNode.insertBefore(skel, img);
                         img.style.display = 'none';
                         img.addEventListener('load', () => { skel.remove(); img.style.display = ''; img.classList.add('loaded'); });
@@ -1999,7 +1999,7 @@
             submitBtn.disabled = true;
             const skelEl = document.createElement('div');
             skelEl.className = 'msg-row bot-row msg-enter';
-            skelEl.innerHTML = '<div class="mia-img-skeleton" style="max-width:260px;border-radius:16px;"><div class="mia-img-spinner"></div><span class="mia-img-gen-label">✨ Generating image...</span></div>';
+            skelEl.innerHTML = '<div class="Jarvis-img-skeleton" style="max-width:260px;border-radius:16px;"><div class="Jarvis-img-spinner"></div><span class="Jarvis-img-gen-label">✨ Generating image...</span></div>';
             stream.appendChild(skelEl);
             stream.scrollTop = stream.scrollHeight;
             fetch('/sf_generate', {
@@ -2013,14 +2013,14 @@
                 submitBtn.disabled = false;
                 const aiRow = document.createElement('div');
                 aiRow.className = 'message-row ai msg-enter';
-                const lbl = document.createElement('div'); lbl.className = 'meta-label'; lbl.textContent = 'Mia';
+                const lbl = document.createElement('div'); lbl.className = 'meta-label'; lbl.textContent = 'Jarvis';
                 const txt = document.createElement('div'); txt.className = 'message-text';
                 if (data.image_url) {
-                    txt.innerHTML = '<div class="mia-img-wrap"><img class="mia-img" src="' + data.image_url + '" alt="' + prompt + '"><div class="mia-img-footer"><span class="mia-img-caption">' + prompt + '</span><button class="mia-img-dl" onclick="downloadImage(\'' + data.image_url + '\',\'mia-create\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button></div></div>';
-                    txt.querySelectorAll('.mia-img').forEach(img => {
+                    txt.innerHTML = '<div class="Jarvis-img-wrap"><img class="Jarvis-img" src="' + data.image_url + '" alt="' + prompt + '"><div class="Jarvis-img-footer"><span class="Jarvis-img-caption">' + prompt + '</span><button class="Jarvis-img-dl" onclick="downloadImage(\'' + data.image_url + '\',\'Jarvis-create\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button></div></div>';
+                    txt.querySelectorAll('.Jarvis-img').forEach(img => {
                         const skel = document.createElement('div');
-                        skel.className = 'mia-img-skeleton';
-                        skel.innerHTML = '<div class="mia-img-spinner"></div><span class="mia-img-gen-label">Generating image...</span>';
+                        skel.className = 'Jarvis-img-skeleton';
+                        skel.innerHTML = '<div class="Jarvis-img-spinner"></div><span class="Jarvis-img-gen-label">Generating image...</span>';
                         img.parentNode.insertBefore(skel, img);
                         img.style.display = 'none';
                         img.addEventListener('load', () => { skel.remove(); img.style.display = ''; img.classList.add('loaded'); });
@@ -2037,7 +2037,7 @@
             .catch(() => {
                 skelEl.remove();
                 submitBtn.disabled = false;
-                const errBubble = makeBubble({ sender: 'Mia', text: '❌ Image generation failed. Try again.' }, false, stream);
+                const errBubble = makeBubble({ sender: 'Jarvis', text: '❌ Image generation failed. Try again.' }, false, stream);
                 stream.appendChild(errBubble);
                 stream.appendChild(typingEl);
                 stream.scrollTop = stream.scrollHeight;
@@ -2062,9 +2062,9 @@
             imgSkeletonEl = document.createElement('div');
             imgSkeletonEl.className = 'msg-row bot-row msg-enter';
             imgSkeletonEl.innerHTML =
-                '<div class="mia-img-skeleton" style="max-width:260px;border-radius:16px;">' +
-                '<div class="mia-img-spinner"></div>' +
-                '<span class="mia-img-gen-label">✨ Generating image...</span>' +
+                '<div class="Jarvis-img-skeleton" style="max-width:260px;border-radius:16px;">' +
+                '<div class="Jarvis-img-spinner"></div>' +
+                '<span class="Jarvis-img-gen-label">✨ Generating image...</span>' +
                 '</div>';
             stream.appendChild(imgSkeletonEl);
         } else {
@@ -2088,7 +2088,7 @@
             }
             submitBtn.disabled = false;
             if (data.reply) {
-                const replyBubble = makeBubble({ sender: 'Mia', text: data.reply }, true, stream);
+                const replyBubble = makeBubble({ sender: 'Jarvis', text: data.reply }, true, stream);
                 replyBubble.classList.add('msg-enter');
                 stream.appendChild(replyBubble);
                 stream.appendChild(typingEl);
@@ -2099,7 +2099,7 @@
             if (imgSkeletonEl) { imgSkeletonEl.remove(); imgSkeletonEl = null; }
             else { typingEl.style.display = 'none'; stopTypingPhase(typingEl); }
             submitBtn.disabled = false;
-            const errBubble = makeBubble({ sender: 'Mia', text: 'Something went wrong. Try again.' }, false, stream);
+            const errBubble = makeBubble({ sender: 'Jarvis', text: 'Something went wrong. Try again.' }, false, stream);
             stream.appendChild(errBubble);
             stream.appendChild(typingEl);
             stream.scrollTop = stream.scrollHeight;
@@ -2268,7 +2268,7 @@
             if (!data.ok) { alert(data.error || 'Could not share chat.'); return; }
             const url = data.url;
             if (navigator.share) {
-                navigator.share({ title: 'Mia Chat', url });
+                navigator.share({ title: 'Jarvis Chat', url });
             } else {
                 navigator.clipboard.writeText(url).then(() => showShareToast()).catch(() => showShareToast());
             }
@@ -2553,15 +2553,15 @@
         const isDark = document.body.getAttribute('data-theme') === 'dark';
         document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
         document.getElementById('darkToggle').classList.toggle('on', !isDark);
-        localStorage.setItem('mia-dark', isDark ? '' : '1');
+        localStorage.setItem('Jarvis-dark', isDark ? '' : '1');
     }
-    if (localStorage.getItem('mia-dark')) {
+    if (localStorage.getItem('Jarvis-dark')) {
         document.body.setAttribute('data-theme', 'dark');
         document.getElementById('darkToggle').classList.add('on');
     }
 
     // ── Animated placeholder ──
-    const phrases = ['Ask Mia anything...', 'Type a message...', 'How can I help?', 'Say hi...'];
+    const phrases = ['Ask Jarvis anything...', 'Type a message...', 'How can I help?', 'Say hi...'];
     let pi=0, ci=0, del=false, spd=100;
     function typeLoop() {
         const cur = phrases[pi];
@@ -2590,7 +2590,7 @@
         fetch(url).then(r => r.blob()).then(blob => {
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = (prompt || 'mia-image') + '.jpg';
+            a.download = (prompt || 'Jarvis-image') + '.jpg';
             a.click();
             setTimeout(() => URL.revokeObjectURL(a.href), 3000);
         }).catch(() => window.open(url, '_blank'));
@@ -2706,7 +2706,7 @@
                     typingEl.style.display = 'none'; stopTypingPhase(typingEl); submitBtn.disabled = false;
                     let data;
                     try { data = JSON.parse(text); } catch(e) {
-                        stream.appendChild(makeBubble({ sender:'Mia', text:'Could not process the image. Try again! 😅' }, false, stream));
+                        stream.appendChild(makeBubble({ sender:'Jarvis', text:'Could not process the image. Try again! 😅' }, false, stream));
                         stream.scrollTop = stream.scrollHeight; return;
                     }
                     const raw = data.reply || data.error || 'No response received';
@@ -2714,13 +2714,13 @@
                         const imgSrc = raw.replace('__EDITED_IMAGE__', '');
                         const editRow = document.createElement('div');
                         editRow.className = 'message-row ai msg-enter';
-                        const lbl = document.createElement('div'); lbl.className = 'meta-label'; lbl.textContent = 'Mia';
+                        const lbl = document.createElement('div'); lbl.className = 'meta-label'; lbl.textContent = 'Jarvis';
                         const txt = document.createElement('div'); txt.className = 'message-text';
-                        txt.innerHTML = '<p style="font-size:12px;opacity:0.6;margin-bottom:6px;">✨ Edited image</p><img src="' + imgSrc + '" style="max-width:240px;border-radius:10px;display:block;margin-bottom:6px;"><a href="' + imgSrc + '" download="mia-edit.png" style="font-size:12px;opacity:0.7;">⬇ Download</a>';
+                        txt.innerHTML = '<p style="font-size:12px;opacity:0.6;margin-bottom:6px;">✨ Edited image</p><img src="' + imgSrc + '" style="max-width:240px;border-radius:10px;display:block;margin-bottom:6px;"><a href="' + imgSrc + '" download="Jarvis-edit.png" style="font-size:12px;opacity:0.7;">⬇ Download</a>';
                         editRow.appendChild(lbl); editRow.appendChild(txt);
                         stream.appendChild(editRow);
                     } else {
-                        const bubble = makeBubble({ sender:'Mia', text:raw }, true, stream);
+                        const bubble = makeBubble({ sender:'Jarvis', text:raw }, true, stream);
                         bubble.classList.add('msg-enter');
                         stream.appendChild(bubble);
                     }
@@ -2729,7 +2729,7 @@
                 })
                 .catch(() => {
                     typingEl.style.display = 'none'; stopTypingPhase(typingEl); submitBtn.disabled = false;
-                    stream.appendChild(makeBubble({ sender:'Mia', text:'Could not process the image. Try again! 😅' }, false, stream));
+                    stream.appendChild(makeBubble({ sender:'Jarvis', text:'Could not process the image. Try again! 😅' }, false, stream));
                     stream.scrollTop = stream.scrollHeight;
                 });
         }
@@ -2755,7 +2755,7 @@
             wrap.className = 'admin-notif-wrap';
             const inner = document.createElement('div');
             inner.className = 'admin-notif-inner';
-            inner.innerHTML = '<div class="notif-label"><span class="notif-label-dot"></span>Mia Admin</div>'
+            inner.innerHTML = '<div class="notif-label"><span class="notif-label-dot"></span>Jarvis Admin</div>'
                 + '<button class="notif-close" aria-label="Dismiss">\u00d7</button>'
                 + '<div class="notif-title">' + title + '</div>'
                 + '<div class="notif-body">' + body + '</div>'

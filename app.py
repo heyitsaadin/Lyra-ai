@@ -95,7 +95,7 @@ TOPIC_KEYWORDS = {
     "writing":  ["write","essay","story","poem","email","letter","summarise","summarize","draft","paragraph","blog"],
     "general":  ["explain","what","how","why","who","when","where","tell me","define","meaning"],
     "creative": ["idea","brainstorm","creative","imagine","concept","suggest","help me think"],
-    "tech":     ["ai","machine learning","neural","model","gpt","chatgpt","mia","llm","data","server","cloud"],
+    "tech":     ["ai","machine learning","neural","model","gpt","chatgpt","Jarvis","llm","data","server","cloud"],
     "personal": ["i feel","i am","my life","im sad","im happy","struggling","advice","help me"],
 }
 
@@ -165,7 +165,7 @@ def _run_image_analysis(img_prompt, session_messages_copy, img_src, username, ch
         description = res.json()["choices"][0]["message"]["content"].strip()
         if description:
             analysis_entry = {
-                "sender": "Mia",
+                "sender": "Jarvis",
                 "text": f"[IMAGE ANALYSIS RESULT]\n{description[:300]}"
             }
             session_messages_copy.append(analysis_entry)
@@ -213,9 +213,9 @@ def get_greeting(username):
     greetings = [
         f"Good {period}, {username}! 😊 Hope you're having a great one — what's on your mind?",
         f"Hey {username}! 👋 Good {period} to you! Ready to help whenever you are.",
-        f"Good {period}, {username}! ✨ Great to see you — what can Mia do for you today?",
+        f"Good {period}, {username}! ✨ Great to see you — what can Jarvis do for you today?",
         f"Hey hey, {username}! 🌟 Good {period}! I'm all ears — what do you need?",
-        f"Good {period}, {username}! 🤖 Mia online and ready. What's up?",
+        f"Good {period}, {username}! 🤖 Jarvis online and ready. What's up?",
     ]
     return greetings[datetime.now(IST).minute % len(greetings)]
 
@@ -534,7 +534,7 @@ def send_discord_alert(user, reason, message):
     if not WEBHOOK_URL:
         return
     payload = {
-        "username": "Mia Security",
+        "username": "Jarvis Security",
         "embeds": [{
             "title": "⚠️ Security Alert",
             "description": f"**User:** {user}\n**Reason:** {reason}\n**Message:** {message}",
@@ -628,16 +628,16 @@ def compress_image(raw_bytes, max_kb=2000):
     return best_buf.getvalue()
 
 def _img_html(src, prompt):
-    """Build the image HTML block — uses mia-img CSS classes."""
+    """Build the image HTML block — uses Jarvis-img CSS classes."""
     escaped = prompt.replace("'", "\\'")
     return (
-        f'<div class="mia-img-wrap">'
-        f'<img src="{src}" alt="{prompt}" class="mia-img" '
+        f'<div class="Jarvis-img-wrap">'
+        f'<img src="{src}" alt="{prompt}" class="Jarvis-img" '
         f'onload="this.classList.add(\'loaded\')" '
         f'onerror="this.parentElement.innerHTML=\'❌ Could not generate image. Try a different prompt.\'">'
-        f'<div class="mia-img-footer">'
-        f'<span class="mia-img-caption">🎨 {prompt}</span>'
-        f'<button onclick="downloadImage(\'{src}\',\'{escaped}\')" class="mia-img-dl">'
+        f'<div class="Jarvis-img-footer">'
+        f'<span class="Jarvis-img-caption">🎨 {prompt}</span>'
+        f'<button onclick="downloadImage(\'{src}\',\'{escaped}\')" class="Jarvis-img-dl">'
         f'&#8203;'
         f'</button>'
         f'</div>'
@@ -900,9 +900,9 @@ def search_youtube(query):
     api_key = os.environ.get("YOUTUBE_API_KEY", "")
     safe_q  = _url_quote(query)
     fallback = (
-        f'<div class="mia-yt-wrap mia-yt-fallback">'
+        f'<div class="Jarvis-yt-wrap Jarvis-yt-fallback">'
         f'<a href="https://www.youtube.com/results?search_query={safe_q}" '
-        f'target="_blank" class="mia-yt-link">&#9658; Search YouTube: {query}</a>'
+        f'target="_blank" class="Jarvis-yt-link">&#9658; Search YouTube: {query}</a>'
         f'</div>'
     )
     if not api_key:
@@ -937,15 +937,15 @@ def search_youtube(query):
         channel = item["snippet"]["channelTitle"].replace('"', '&quot;').replace("'", "&#39;")
         print(f"[YT] Found: {vid_id} — {title}")
         return (
-            f'<div class="mia-yt-wrap">'
-            f'<div class="mia-yt-player">'
+            f'<div class="Jarvis-yt-wrap">'
+            f'<div class="Jarvis-yt-player">'
             f'<iframe src="https://www.youtube.com/embed/{vid_id}?rel=0&modestbranding=1" '
             f'title="{title}" frameborder="0" allowfullscreen '
             f'allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">'
             f'</iframe></div>'
-            f'<div class="mia-yt-footer">'
-            f'<span class="mia-yt-title">&#9658; {title}</span>'
-            f'<span class="mia-yt-channel">{channel}</span>'
+            f'<div class="Jarvis-yt-footer">'
+            f'<span class="Jarvis-yt-title">&#9658; {title}</span>'
+            f'<span class="Jarvis-yt-channel">{channel}</span>'
             f'</div></div>'
         )
     except Exception as e:
@@ -957,15 +957,15 @@ def _compact_for_session(text):
         parts = text.split('##YT_SPLIT##', 1)
         txt_part = parts[0].strip()[:200]
         yt_part  = parts[1]
-        m = re.search(r'mia-yt-title[^>]*>&#9658;\s*(.*?)</span>', yt_part)
+        m = re.search(r'Jarvis-yt-title[^>]*>&#9658;\s*(.*?)</span>', yt_part)
         title = m.group(1).strip() if m else "YouTube video"
         return f"{txt_part}\n[YOUTUBE VIDEO: {title}]"
-    if 'mia-yt-wrap' in text:
-        m = re.search(r'mia-yt-title[^>]*>&#9658;\s*(.*?)</span>', text)
+    if 'Jarvis-yt-wrap' in text:
+        m = re.search(r'Jarvis-yt-title[^>]*>&#9658;\s*(.*?)</span>', text)
         title = m.group(1).strip() if m else "YouTube video"
         return f"[YOUTUBE VIDEO: {title}]"
-    if 'mia-img-wrap' in text or 'mia-img-wrap' in text:
-        m = re.search(r'mia-img-caption[^>]*>🎨\s*(.*?)(?:\s*✨\s*)?</span>', text)
+    if 'Jarvis-img-wrap' in text or 'Jarvis-img-wrap' in text:
+        m = re.search(r'Jarvis-img-caption[^>]*>🎨\s*(.*?)(?:\s*✨\s*)?</span>', text)
         caption = m.group(1).strip() if m else "generated image"
         return f"[IMAGE GENERATED: {caption}]"
     if text.startswith("__EDITED_IMAGE__"):
@@ -984,8 +984,8 @@ def _build_clean_history(history):
         txt = msg["text"]
         if txt.startswith("[IMAGE GENERATED:"):
             last_img_prompt = txt[len("[IMAGE GENERATED:"):].rstrip("]").strip()
-        elif 'mia-img-wrap' in txt or 'mia-img-wrap' in txt:
-            m = re.search(r'mia-img-caption[^>]*>🎨\s*(.*?)(?:\s*✨\s*)?</span>', txt)
+        elif 'Jarvis-img-wrap' in txt or 'Jarvis-img-wrap' in txt:
+            m = re.search(r'Jarvis-img-caption[^>]*>🎨\s*(.*?)(?:\s*✨\s*)?</span>', txt)
             last_img_prompt = m.group(1).strip() if m else "an image"
         elif txt.startswith("[IMAGE ANALYSIS RESULT]"):
             last_img_analysis = txt[len("[IMAGE ANALYSIS RESULT]"):].strip()[:400]
@@ -996,8 +996,8 @@ def _build_clean_history(history):
         if txt.startswith("[IMAGE GENERATED:"):
             img_prompt = txt[len("[IMAGE GENERATED:"):].rstrip("]").strip()
             return {"role": "assistant", "content": f"[I generated an image: {img_prompt}]"}
-        if 'mia-img-wrap' in txt or 'mia-img-wrap' in txt:
-            m = re.search(r'mia-img-caption[^>]*>🎨\s*(.*?)(?:\s*✨\s*)?</span>', txt)
+        if 'Jarvis-img-wrap' in txt or 'Jarvis-img-wrap' in txt:
+            m = re.search(r'Jarvis-img-caption[^>]*>🎨\s*(.*?)(?:\s*✨\s*)?</span>', txt)
             img_prompt = m.group(1).strip() if m else "an image"
             return {"role": "assistant", "content": f"[I generated an image: {img_prompt}]"}
         if txt.startswith("[IMAGE ANALYSIS RESULT]"):
@@ -1052,7 +1052,7 @@ def ask_jarvis_brain(prompt, history=None):
     headers = {"Authorization": "Bearer " + API_KEY, "Content-Type": "application/json"}
     clean_msgs, last_img_prompt, last_img_analysis = _build_clean_history(history)
     system_msg = (
-        "You are Mia, a personal AI assistant made by Aadin. "
+        "You are Jarvis, a personal AI assistant made by Aadin. "
         "Be warm, friendly, conversational - like a smart best friend. "
         "Match the user's energy. Use emojis naturally but sparingly.\n\n"
         "FORMATTING: Code -> markdown code blocks with language tag. "
@@ -1159,7 +1159,7 @@ def ask_jarvis(prompt, history=None, wants_code=False):
 - Only give a longer reply if the user explicitly asks for detail, explanation, a tutorial, a recipe, or a list.
 - Use **bold** for headings if needed. Numbered lists for steps. Bullet points for items.
 - NEVER use code blocks for recipes, instructions, or any non-code content."""
-    system_msg = f"""You are Mia, a personal AI assistant created by Aadin. You have a warm, friendly, and engaging personality — like a smart best friend who genuinely enjoys helping.
+    system_msg = f"""You are Jarvis, a personal AI assistant created by Aadin. You have a warm, friendly, and engaging personality — like a smart best friend who genuinely enjoys helping.
 
 PERSONALITY:
 - Be conversational, warm, and natural. Never sound robotic or corporate.
@@ -1249,7 +1249,7 @@ def _build_reply(user_msg):
         except Exception:
             pass
     if contains_bad_words(user_msg):
-        send_discord_alert(session["user"], "Abusive language toward Mia or Aadin", user_msg)
+        send_discord_alert(session["user"], "Abusive language toward Jarvis or Aadin", user_msg)
     _img_question_triggers = [
         "color", "colour", "what is in", "what's in", "whats in",
         "describe", "explain", "what does", "tell me about", "analyse",
@@ -1258,7 +1258,7 @@ def _build_reply(user_msg):
         "what animal", "what object", "what is it", "what's it",
     ]
     _has_recent_image = any(
-        'mia-img-wrap' in m.get("text", "") or m.get("text", "").startswith("[IMAGE GENERATED:")
+        'Jarvis-img-wrap' in m.get("text", "") or m.get("text", "").startswith("[IMAGE GENERATED:")
         for m in session.get("messages", [])
     )
     _is_img_question = _has_recent_image and any(t in user_msg.lower() for t in _img_question_triggers)
@@ -1453,7 +1453,7 @@ def login():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [{"sender": "Mia", "text": greeting}]
+            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
             return redirect("/landing")
         else:
             error = "Incorrect username or password"
@@ -1487,7 +1487,7 @@ def signup():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [{"sender": "Mia", "text": greeting}]
+            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
             return redirect("/landing")
     return render_template("signup.html", error=error, username_taken=username_taken)
 
@@ -1566,8 +1566,8 @@ def send():
     update_profile(session["user"], user_msg, "You")
     reply = _build_reply(user_msg)
     session_text = _compact_for_session(reply)
-    session["messages"].append({"sender": "Mia", "text": session_text})
-    update_profile(session["user"], reply, "Mia")
+    session["messages"].append({"sender": "Jarvis", "text": session_text})
+    update_profile(session["user"], reply, "Jarvis")
     session.modified = True
     msg_count = len(session["messages"])
     if msg_count % 10 == 0 and msg_count > 0:
@@ -1599,8 +1599,8 @@ def generate_image_route():
         reply, _ = generate_image_nvidia(prompt)
     else:
         reply = generate_image(prompt)
-    session["messages"].append({"sender": "Mia", "text": _compact_for_session(reply)})
-    update_profile(session["user"], "image_generated", "Mia")
+    session["messages"].append({"sender": "Jarvis", "text": _compact_for_session(reply)})
+    update_profile(session["user"], "image_generated", "Jarvis")
     _msgs_copy = list(session["messages"])
     threading.Thread(
         target=_auto_analyse_generated_image,
@@ -1617,7 +1617,7 @@ def new_chat():
     _flush_chat_session()
     username = session["user"]
     greeting = get_greeting(username)
-    session["messages"] = [{"sender": "Mia", "text": greeting}]
+    session["messages"] = [{"sender": "Jarvis", "text": greeting}]
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return redirect("/chat")
@@ -1726,9 +1726,9 @@ def send_image():
             stored_reply = f"[IMAGE ANALYSIS RESULT]\n{reply[:300]}"
         else:
             stored_reply = "[IMAGE EDITED: result displayed to user]"
-        session["messages"].append({"sender": "Mia", "text": stored_reply})
+        session["messages"].append({"sender": "Jarvis", "text": stored_reply})
         update_profile(session["user"], user_label, "You")
-        update_profile(session["user"], "image_analysed_or_edited", "Mia")
+        update_profile(session["user"], "image_analysed_or_edited", "Jarvis")
         session.modified = True
         return jsonify({"reply": reply, "intent": intent})
     except Exception as e:
@@ -1801,7 +1801,7 @@ def account_chats():
         if not preview:
             for m in msgs:
                 raw = m.get("text", "")
-                if (raw.startswith("[IMAGE ANALYSIS") or "mia-img-wrap" in raw
+                if (raw.startswith("[IMAGE ANALYSIS") or "Jarvis-img-wrap" in raw
                         or raw.startswith("[IMAGE GENERATED:") or raw.startswith("[IMAGE EDITED:")):
                     continue
                 clean = re.sub(r"<[^>]+>", "", raw).strip()
@@ -1843,7 +1843,7 @@ def account_delete_chat(session_key):
         return jsonify({"ok": False}), 401
     delete_chat_session(session["user"], session_key)
     if session.get("chat_key") == session_key:
-        session["messages"] = [{"sender": "Mia", "text": get_greeting(session["user"])}]
+        session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
         session["chat_key"] = secrets.token_hex(8)
         session.modified = True
     return jsonify({"ok": True}), 200
@@ -1874,7 +1874,7 @@ def account_delete_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [{"sender": "Mia", "text": get_greeting(session["user"])}]
+    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200
@@ -1910,7 +1910,7 @@ def share_chat():
                 title = clean[:60]
                 break
     if not title:
-        title = "Mia Chat"
+        title = "Jarvis Chat"
     clean_msgs = []
     for m in msgs:
         txt = m.get("text", "")
@@ -1920,7 +1920,7 @@ def share_chat():
             prompt_text = txt[len("[IMAGE GENERATED:"):].rstrip("]").strip()
             safe = quote(prompt_text)
             img_url = f"https://image.pollinations.ai/prompt/{safe}?width=768&height=768&nologo=true&enhance=true"
-            txt = f'<div class="mia-img-wrap"><img src="{img_url}" alt="{prompt_text}" class="mia-img" onload="this.classList.add(\'loaded\')"><div class="mia-img-footer"><span class="mia-img-caption">🎨 {prompt_text} ✨</span></div></div>'
+            txt = f'<div class="Jarvis-img-wrap"><img src="{img_url}" alt="{prompt_text}" class="Jarvis-img" onload="this.classList.add(\'loaded\')"><div class="Jarvis-img-footer"><span class="Jarvis-img-caption">🎨 {prompt_text} ✨</span></div></div>'
         if txt.startswith("[IMAGE EDITED:"):
             txt = "✅ Image was edited and displayed."
         clean_msgs.append({"sender": m["sender"], "text": txt})
@@ -1963,7 +1963,7 @@ def clear_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [{"sender": "Mia", "text": get_greeting(session["user"])}]
+    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200
@@ -2314,7 +2314,7 @@ def admin_analyse_chats(username):
     groq_summary = profile.get("groq_summary", "")
     if not msg_count:
         return jsonify({"error": "No usage data found for this user"}), 404
-    sys_p = """You are an AI analyst reviewing aggregated usage metadata about a user of a chatbot called Mia.
+    sys_p = """You are an AI analyst reviewing aggregated usage metadata about a user of a chatbot called Jarvis.
 You are working from pre-computed statistics only — no raw messages are available.
 Your job: produce a structured JSON report.
 Reply ONLY as raw JSON — no markdown, no explanation outside JSON.

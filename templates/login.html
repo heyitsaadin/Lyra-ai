@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Mia AI - Login</title>
+    <title>Jarvis - Login</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script>
@@ -333,7 +333,7 @@
     </style>
     <script>
         /* Apply theme immediately — same key chat.html uses */
-        if (localStorage.getItem('mia-dark')) {
+        if (localStorage.getItem('Jarvis-dark')) {
             document.documentElement.setAttribute('data-theme', 'dark');
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
@@ -345,12 +345,12 @@
     <div id="pageTransition"></div>
 
     <header class="header-nav">
-        <div class="brand-title">Mia AI</div>
+        <div class="brand-title">Jarvis</div>
     </header>
 
     <!-- Desktop left panel -->
     <aside class="desktop-panel">
-        <div class="dp-logo">Mia AI</div>
+        <div class="dp-logo">Jarvis</div>
         <div class="dp-body">
             <div class="dp-headline">Welcome<br>Back.</div>
             <p class="dp-desc">Your personal AI assistant. Chat, create images, generate quizzes, and more — all in one place.</p>
@@ -448,13 +448,13 @@
     <div class="credit">created by Aadin</div>
 
     <script>
-        /* ── Theme: sync with chat.html (data-theme on body, mia-dark key) ── */
+        /* ── Theme: sync with chat.html (data-theme on body, Jarvis-dark key) ── */
         (function () {
-            const theme = localStorage.getItem('mia-dark') ? 'dark' : 'light';
+            const theme = localStorage.getItem('Jarvis-dark') ? 'dark' : 'light';
             document.body.setAttribute('data-theme', theme);
         })();
         window.addEventListener('storage', function (e) {
-            if (e.key === 'mia-dark') {
+            if (e.key === 'Jarvis-dark') {
                 document.body.setAttribute('data-theme', e.newValue ? 'dark' : 'light');
             }
         });

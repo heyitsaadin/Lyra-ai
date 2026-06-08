@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{{ title }} — Mia AI</title>
+    <title>{{ title }} — Jarvis</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <meta name="robots" content="noindex, nofollow">
-    <meta property="og:title" content="{{ title }} — Mia AI">
-    <meta property="og:description" content="Shared conversation with Mia AI">
+    <meta property="og:title" content="{{ title }} — Jarvis">
+    <meta property="og:description" content="Shared conversation with Jarvis">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <style>
         :root {
@@ -243,7 +243,7 @@
         .copy-btn:hover { background: rgba(255,255,255,0.22); }
 
         /* ── Generated / uploaded images ── */
-        .mia-img-wrap {
+        .Jarvis-img-wrap {
             margin: 8px 0;
             border-radius: 14px;
             overflow: hidden;
@@ -251,13 +251,13 @@
             max-width: 340px;
         }
 
-        .mia-img {
+        .Jarvis-img {
             display: block;
             width: 100%;
             border-radius: 14px 14px 0 0;
         }
 
-        .mia-img-footer {
+        .Jarvis-img-footer {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -265,7 +265,7 @@
             gap: 8px;
         }
 
-        .mia-img-caption {
+        .Jarvis-img-caption {
             font-size: 12px;
             color: var(--text-secondary);
             flex: 1;
@@ -275,7 +275,7 @@
         }
 
         /* Hide download button in shared view */
-        .mia-img-dl { display: none !important; }
+        .Jarvis-img-dl { display: none !important; }
 
         /* ── Uploaded image indicator ── */
         .uploaded-img-badge {
@@ -375,7 +375,7 @@
 
 <!-- Top bar -->
 <nav class="top-bar">
-    <a href="/landing" class="top-bar-logo">MIA AI</a>
+    <a href="/landing" class="top-bar-logo">Jarvis</a>
     <span class="top-bar-badge">Shared</span>
     <button class="top-bar-copy" onclick="copyLink()" aria-label="Copy link">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -404,7 +404,7 @@
 
     <!-- Footer -->
     <div class="chat-footer">
-        <span class="chat-footer-logo">MIA AI</span>
+        <span class="chat-footer-logo">Jarvis</span>
         <span class="chat-footer-dot"></span>
         <span class="chat-footer-date" id="sharedAtEl"></span>
     </div>
@@ -449,7 +449,7 @@
     document.getElementById('titleEl').textContent    = data.title || 'Shared conversation';
     document.getElementById('bylineEl').textContent   = data.username + ' · ' + data.sharedAt;
     document.getElementById('sharedAtEl').textContent = data.sharedAt;
-    document.title = (data.title || 'Shared chat') + ' — Mia AI';
+    document.title = (data.title || 'Shared chat') + ' — Jarvis';
 
     // ── Copy buttons on code blocks ──
     function addCopyBtns(el) {
@@ -473,7 +473,7 @@
 
         const label = document.createElement('div');
         label.className = 'meta-label';
-        label.textContent = msg.sender === 'You' ? data.username || 'User' : 'Mia';
+        label.textContent = msg.sender === 'You' ? data.username || 'User' : 'Jarvis';
         row.appendChild(label);
 
         const text = document.createElement('div');
@@ -504,11 +504,11 @@
                 rawText = rawText.slice('[IMAGE ANALYSIS RESULT]\n'.length);
             }
 
-            if (rawText.includes('mia-img-wrap')) {
+            if (rawText.includes('Jarvis-img-wrap')) {
                 text.innerHTML = rawText;
 
                 // Show images with skeleton loader; hide download button
-                text.querySelectorAll('.mia-img').forEach(img => {
+                text.querySelectorAll('.Jarvis-img').forEach(img => {
                     if (!img.classList.contains('loaded')) {
                         const skel = document.createElement('div');
                         skel.className = 'img-skeleton';
