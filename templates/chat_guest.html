@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Mia AI — Guest</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #fbfbfa;
+            --text-primary: #181816;
+            --text-secondary: #706f6c;
+            --ui-accent: #181816;
+            --ui-subtle: #f0f0ee;
+            --user-bubble: #f0f0ee;
+            --code-bg: #1e1e2e;
+            --code-fg: #cdd6f4;
+            --guest-accent: #7c3aed;
+        }
+        [data-theme="dark"] {
+            --bg-primary: #0a0a0a;
+            --text-primary: #f5f5f5;
+            --text-secondary: #8a8a8a;
+            --ui-accent: #f5f5f5;
+            --ui-subtle: #1a1a1a;
+            --user-bubble: #1f1f1f;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent; }
+        button, textarea { outline:none; border:none; background:none; }
+        body { background-color:var(--bg-primary); color:var(--text-primary); height:100dvh; display:flex; justify-content:center; overflow:hidden; }
+
+        /* ── Chat layout ── */
+        .chat-container { display:flex; flex-direction:column; width:100%; max-width:760px; height:100dvh; position:relative; }
+        .chat-header {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:12px 16px; border-bottom:1px solid color-mix(in srgb, var(--text-secondary) 12%, transparent);
+            background:var(--bg-primary); position:relative; z-index:10; gap:8px;
+        }
+        .header-left { display:flex; align-items:center; gap:10px; }
+        .guest-badge {
+            display:inline-flex; align-items:center; gap:5px;
+            background:color-mix(in srgb, var(--guest-accent) 12%, transparent);
+            color:var(--guest-accent); border:1px solid color-mix(in srgb, var(--guest-accent) 25%, transparent);
+            border-radius:99px; padding:4px 10px;
+            font-size:11px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
+        }
+        .guest-badge svg { width:12px; height:12px; stroke:currentColor; fill:none; stroke-width:2.5; stroke-linecap:round; }
+        .brand { font-size:15px; font-weight:700; letter-spacing:-0.01em; }
+        .header-right { display:flex; align-items:center; gap:6px; }
+        .signup-btn-header {
+            display:inline-flex; align-items:center; gap:6px;
+            background:var(--text-primary); color:var(--bg-primary);
+            border-radius:99px; padding:7px 14px;
+            font-size:12px; font-weight:600; letter-spacing:0.02em;
+            cursor:pointer; border:none; text-decoration:none;
+            transition:opacity .15s;
+        }
+        .signup-btn-header:hover { opacity:.85; }
+
+        /* ── Guest limits bar ── */
+        .guest-limits-bar {
+            display:flex; align-items:center; gap:10px;
+            padding:8px 16px;
+            background:color-mix(in srgb, var(--guest-accent) 6%, transparent);
+            border-bottom:1px solid color-mix(in srgb, var(--guest-accent) 12%, transparent);
+            font-size:11px; color:var(--text-secondary);
+            font-family:'DM Mono', monospace; letter-spacing:0.03em;
+            overflow-x:auto; white-space:nowrap;
+        }
+        .limit-chip {
+            display:inline-flex; align-items:center; gap:4px;
+            background:var(--bg-primary);
+            border:1px solid color-mix(in srgb, var(--text-secondary) 18%, transparent);
+            border-radius:99px; padding:3px 8px;
+            font-size:10px; font-weight:500;
+        }
+        .limit-chip.warn { border-color:color-mix(in srgb, #f59e0b 40%, transparent); color:#f59e0b; }
+        .limit-chip.done { border-color:color-mix(in srgb, #ef4444 35%, transparent); color:#ef4444; }
+
+        /* ── Messages ── */
+        .message-stream {
+            flex:1; overflow-y:auto; padding:20px 16px 8px;
+            display:flex; flex-direction:column;
+            scroll-behavior:smooth;
+        }
+        .message-stream::-webkit-scrollbar { display:none; }
+        .msg-row { display:flex; flex-direction:column; margin-bottom:20px; animation:msgIn .32s cubic-bezier(.22,1,.36,1) both; }
+        @keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+        .msg-row.msg-enter { animation:msgIn .32s cubic-bezier(.22,1,.36,1) both; }
+        .meta-label { font-size:10px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; color:var(--text-secondary); margin-bottom:5px; }
+        .msg-row.bot-row { align-items:flex-start; }
+        .msg-row.user-row { align-items:flex-end; }
+        .message-text { font-size:14.5px; line-height:1.65; word-break:break-word; }
+        .bot-row .message-text { color:var(--text-primary); max-width:88%; }
+        .bot-row .message-text p { margin-bottom:4px; }
+        .bot-row .message-text p:last-child { margin-bottom:0; }
+        .bot-row .message-text ul, .bot-row .message-text ol { padding-left:18px; margin:6px 0; }
+        .bot-row .message-text li { margin-bottom:4px; }
+        .bot-row .message-text strong { font-weight:700; }
+        .bot-row .message-text code { background:rgba(0,0,0,.07); border-radius:4px; padding:1px 5px; font-family:'Courier New',monospace; font-size:13px; color:#c0392b; }
+        [data-theme="dark"] .bot-row .message-text code { background:rgba(255,255,255,.08); color:#f87171; }
+        .bot-row .message-text pre { background:var(--code-bg); border-radius:10px; padding:12px 14px; margin:8px 0; overflow-x:auto; position:relative; }
+        .bot-row .message-text pre code { background:none; color:var(--code-fg); font-size:12.5px; padding:0; line-height:1.6; white-space:pre; }
+        .copy-btn { position:absolute; top:8px; right:8px; background:#444; color:#fff; border:none; border-radius:5px; font-size:10px; padding:3px 8px; cursor:pointer; opacity:.7; }
+        .copy-btn:hover { opacity:1; }
+        .user-row .message-text { background:var(--user-bubble); color:var(--text-primary); padding:11px 17px; border-radius:22px 22px 4px 22px; max-width:78%; font-size:14.5px; line-height:1.55; font-weight:500; }
+
+        /* ── Typing ── */
+        .typing-bubble { display:none; align-self:flex-start; margin-bottom:12px; }
+        .typing-dots-wrap { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; }
+        .dot-main { width:8px; height:8px; background:var(--text-secondary); border-radius:50%; animation:dotPulse 1.4s ease-in-out infinite; }
+        @keyframes dotPulse { 0%,80%,100%{transform:scale(.8);opacity:.5} 40%{transform:scale(1.1);opacity:1} }
+
+        /* ── Image rendering ── */
+        .mia-img-wrap { max-width:280px; border-radius:16px; overflow:hidden; background:var(--ui-subtle); box-shadow:0 4px 24px rgba(0,0,0,.1); margin:4px 0; }
+        .mia-img { width:100%; display:block; opacity:0; transition:opacity .4s; }
+        .mia-img.loaded { opacity:1; }
+        .mia-img-footer { display:flex; align-items:center; padding:8px 12px; gap:8px; }
+        .mia-img-caption { font-size:12px; color:var(--text-secondary); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .mia-img-dl { background:none; border:none; cursor:pointer; color:var(--text-secondary); padding:4px; border-radius:6px; display:flex; align-items:center; }
+        .mia-img-dl:hover { color:var(--text-primary); }
+        .mia-img-skeleton { display:flex; align-items:center; gap:10px; padding:14px 18px; background:var(--ui-subtle); border-radius:16px; }
+        .mia-img-spinner { width:18px; height:18px; border-radius:50%; border:2px solid rgba(127,127,127,.2); border-top-color:var(--text-secondary); animation:imgSpin .8s linear infinite; }
+        @keyframes imgSpin { to{transform:rotate(360deg)} }
+        .mia-img-gen-label { font-size:13px; color:var(--text-secondary); }
+
+        /* ── YouTube ── */
+        .mia-yt-wrap { max-width:320px; border-radius:14px; overflow:hidden; background:var(--ui-subtle); }
+        .mia-yt-player iframe { width:100%; aspect-ratio:16/9; display:block; border:none; }
+        .mia-yt-footer { padding:8px 12px; }
+        .mia-yt-title { display:block; font-size:12px; font-weight:600; color:var(--text-primary); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .mia-yt-channel { font-size:11px; color:var(--text-secondary); }
+
+        /* ── Wikipedia search ── */
+        .wsearch-wrap { max-width:340px; border-radius:14px; background:var(--ui-subtle); padding:10px; margin-top:6px; }
+        .wsearch-header { font-size:11px; font-weight:700; color:var(--text-secondary); letter-spacing:.04em; text-transform:uppercase; margin-bottom:8px; padding:0 2px; }
+        .wsearch-results { display:flex; flex-direction:column; gap:4px; }
+        .wsearch-result { display:flex; flex-direction:column; gap:2px; padding:8px 10px; border-radius:10px; background:var(--bg-primary); text-decoration:none; }
+        .wsearch-result:hover { background:color-mix(in srgb,var(--text-secondary) 8%,var(--bg-primary)); }
+        .wsearch-title { font-size:13px; font-weight:600; color:var(--text-primary); }
+        .wsearch-snippet { font-size:12px; color:var(--text-secondary); line-height:1.5; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
+        .wsearch-url { font-size:10px; color:var(--guest-accent); letter-spacing:.02em; }
+
+        /* ── Input dock ── */
+        .dock-wrapper { padding:8px 12px 16px; }
+        .img-preview-wrap { display:none; align-items:center; gap:8px; padding:8px 12px; background:var(--ui-subtle); border-radius:12px; margin-bottom:6px; }
+        .img-preview-wrap.show { display:flex; }
+        .img-preview-thumb { width:36px; height:36px; border-radius:8px; object-fit:cover; }
+        .img-preview-name { font-size:12px; color:var(--text-secondary); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .img-preview-remove { color:var(--text-secondary); cursor:pointer; padding:4px; border-radius:50%; font-size:13px; }
+        .img-preview-remove:hover { color:var(--text-primary); background:var(--ui-subtle); }
+
+        .input-dock {
+            background:var(--ui-subtle);
+            border-radius:24px; padding:6px 6px 6px 14px;
+            display:flex; flex-direction:column; gap:0;
+            transition:box-shadow .2s;
+        }
+        .input-dock:focus-within { box-shadow:0 0 0 2px var(--text-primary); }
+        .input-row { display:flex; align-items:flex-end; gap:4px; }
+        .attach-btn {
+            width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            color:var(--text-secondary); cursor:pointer; transition:color .15s; flex-shrink:0;
+        }
+        .attach-btn:hover { color:var(--text-primary); }
+        .attach-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+        #chatInput {
+            flex:1; resize:none; background:none; color:var(--text-primary); font-size:15px;
+            padding:6px 4px; line-height:1.5; max-height:130px; overflow-y:auto;
+            font-family:inherit;
+        }
+        #chatInput::placeholder { color:var(--text-secondary); opacity:.6; }
+        #chatInput::-webkit-scrollbar { display:none; }
+        .submit-btn {
+            width:36px; height:36px; border-radius:50%; flex-shrink:0;
+            background:var(--text-primary); color:var(--bg-primary);
+            display:flex; align-items:center; justify-content:center;
+            cursor:pointer; transition:opacity .15s, transform .1s;
+        }
+        .submit-btn:hover { opacity:.85; }
+        .submit-btn:active { transform:scale(.92); }
+        .submit-btn:disabled { opacity:.35; cursor:not-allowed; }
+        .submit-btn svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+        /* ── Signup nudge banner ── */
+        .signup-nudge {
+            margin:0 0 10px;
+            background:color-mix(in srgb, var(--guest-accent) 8%, transparent);
+            border:1px solid color-mix(in srgb, var(--guest-accent) 22%, transparent);
+            border-radius:14px; padding:10px 14px;
+            display:flex; align-items:center; justify-content:space-between; gap:10px;
+        }
+        .signup-nudge-text { font-size:13px; color:var(--text-primary); font-weight:500; }
+        .signup-nudge-sub { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+        .signup-nudge-btn {
+            flex-shrink:0; background:var(--guest-accent); color:#fff;
+            border:none; border-radius:99px; padding:7px 14px;
+            font-size:12px; font-weight:600; cursor:pointer;
+            text-decoration:none; display:inline-block; transition:opacity .15s;
+        }
+        .signup-nudge-btn:hover { opacity:.85; }
+
+        /* ── Signup POPUP (image limit hit) ── */
+        .signup-popup-backdrop {
+            position:fixed; inset:0; background:rgba(0,0,0,.45);
+            z-index:9000; display:none; align-items:flex-end; justify-content:center;
+            backdrop-filter:blur(4px);
+        }
+        .signup-popup-backdrop.show { display:flex; }
+        .signup-popup {
+            width:min(420px, 100%); background:var(--bg-primary);
+            border-radius:24px 24px 0 0; padding:28px 24px 36px;
+            animation:popupSlideUp .38s cubic-bezier(.22,1,.36,1) both;
+            position:relative;
+        }
+        @keyframes popupSlideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+        .popup-close { position:absolute; top:16px; right:16px; background:var(--ui-subtle); border:none; border-radius:50%; width:32px; height:32px; cursor:pointer; color:var(--text-secondary); display:flex; align-items:center; justify-content:center; }
+        .popup-close:hover { color:var(--text-primary); }
+        .popup-icon { width:56px; height:56px; border-radius:18px; background:color-mix(in srgb, var(--guest-accent) 12%, transparent); display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+        .popup-icon svg { width:28px; height:28px; stroke:var(--guest-accent); fill:none; stroke-width:2; stroke-linecap:round; }
+        .popup-title { font-size:22px; font-weight:800; letter-spacing:-.02em; margin-bottom:6px; }
+        .popup-sub { font-size:14px; color:var(--text-secondary); line-height:1.5; margin-bottom:22px; }
+        .popup-cta {
+            display:block; width:100%; padding:15px;
+            background:var(--text-primary); color:var(--bg-primary);
+            border-radius:14px; font-size:15px; font-weight:700;
+            text-align:center; text-decoration:none; cursor:pointer; border:none;
+            transition:opacity .15s;
+        }
+        .popup-cta:hover { opacity:.87; }
+        .popup-login { display:block; text-align:center; margin-top:12px; font-size:13px; color:var(--text-secondary); }
+        .popup-login a { color:var(--text-primary); font-weight:600; text-decoration:none; }
+        .popup-login a:hover { text-decoration:underline; }
+
+        /* ── Dark mode toggle ── */
+        .dark-toggle-btn {
+            width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+            color:var(--text-secondary); cursor:pointer; background:none; border:none;
+            transition:color .15s;
+        }
+        .dark-toggle-btn:hover { color:var(--text-primary); }
+        .dark-toggle-btn svg { width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; }
+    </style>
+    <script>
+        if (localStorage.getItem('mia-dark')) {
+            document.documentElement.setAttribute('data-theme','dark');
+        } else {
+            document.documentElement.setAttribute('data-theme','light');
+        }
+    </script>
+</head>
+<body>
+    <!-- Signup popup (image limit) -->
+    <div class="signup-popup-backdrop" id="signupPopup">
+        <div class="signup-popup">
+            <button class="popup-close" onclick="closePopup()">
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="popup-icon">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="popup-title" id="popupTitle">You've hit the guest limit!</div>
+            <div class="popup-sub" id="popupSub">Create a free account to unlock unlimited image generation, chat history, and all features — no email required.</div>
+            <a href="/signup" class="popup-cta">Create Free Account</a>
+            <div class="popup-login">Already have one? <a href="/login">Log in</a></div>
+        </div>
+    </div>
+
+    <div class="chat-container">
+        <header class="chat-header">
+            <div class="header-left">
+                <span class="brand">Mia AI</span>
+                <span class="guest-badge">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    {{ guest_label }}
+                </span>
+            </div>
+            <div class="header-right">
+                <button class="dark-toggle-btn" onclick="toggleDark()" title="Toggle dark mode">
+                    <svg id="darkIcon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+                <a href="/signup" class="signup-btn-header">Sign up free</a>
+            </div>
+        </header>
+
+        <!-- Limits bar -->
+        <div class="guest-limits-bar" id="limitsBar">
+            <span>Guest limits:</span>
+            <span class="limit-chip" id="chipMsgs">💬 <span id="msgsLeft">{{ 20 - guest_msgs }}</span>/20 msgs</span>
+            <span class="limit-chip" id="chipImgs">🎨 <span id="imgsLeft">{{ 5 - guest_imgs }}</span>/5 images</span>
+            <span class="limit-chip" id="chipAnalysis">🔍 2 analyses</span>
+            <span class="limit-chip" id="chipEdit">✏️ 1 edit</span>
+            <span class="limit-chip" id="chipQuiz">📄 1 quiz</span>
+        </div>
+
+        <main class="message-stream" id="messageStream"></main>
+
+        <!-- Image preview -->
+        <div class="img-preview-wrap" id="imgPreview">
+            <img class="img-preview-thumb" id="imgThumb" src="" alt="">
+            <span class="img-preview-name" id="imgName"></span>
+            <button class="img-preview-remove" id="imgRemove" title="Remove">✕</button>
+        </div>
+
+        <div class="dock-wrapper">
+            <!-- Signup nudge (shown near limit) -->
+            <div class="signup-nudge" id="signupNudge" style="display:none">
+                <div>
+                    <div class="signup-nudge-text">Running low on guest credits</div>
+                    <div class="signup-nudge-sub">Create a free account for unlimited access</div>
+                </div>
+                <a href="/signup" class="signup-nudge-btn">Sign up</a>
+            </div>
+
+            <div class="input-dock" id="inputDock">
+                <div class="input-row">
+                    <label class="attach-btn" for="imgInput" title="Attach image">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    </label>
+                    <input type="file" id="imgInput" accept="image/*" style="display:none">
+                    <textarea id="chatInput" placeholder="Ask me anything…" rows="1" autocomplete="off"></textarea>
+                    <button class="submit-btn" id="submitBtn" type="button" title="Send">
+                        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden data -->
+    <script type="application/json" id="msgData">{{ messages | tojson }}</script>
+
+{% raw %}
+<script>
+    marked.setOptions({ breaks:true, gfm:true });
+
+    // ── State ──
+    let msgsLeft  = parseInt(document.getElementById('msgsLeft').textContent) || 20;
+    let imgsLeft  = parseInt(document.getElementById('imgsLeft').textContent) || 5;
+    let pendingImg = null;
+
+    const stream    = document.getElementById('messageStream');
+    const chatInput = document.getElementById('chatInput');
+    const submitBtn = document.getElementById('submitBtn');
+    const imgInput  = document.getElementById('imgInput');
+    const imgPreview= document.getElementById('imgPreview');
+    const imgThumb  = document.getElementById('imgThumb');
+    const imgName   = document.getElementById('imgName');
+    const imgRemove = document.getElementById('imgRemove');
+
+    // ── Dark mode ──
+    function toggleDark() {
+        const isDark = document.body.getAttribute('data-theme') === 'dark';
+        const next = isDark ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', next);
+        document.documentElement.setAttribute('data-theme', next);
+        if (next === 'dark') { localStorage.setItem('mia-dark','1'); }
+        else { localStorage.removeItem('mia-dark'); }
+    }
+    (function() {
+        const theme = localStorage.getItem('mia-dark') ? 'dark' : 'light';
+        document.body.setAttribute('data-theme', theme);
+    })();
+
+    // ── Typing indicator ──
+    function makeTyping() {
+        const d = document.createElement('div');
+        d.className = 'msg-row bot-row';
+        d.innerHTML = '<div class="typing-bubble" style="display:block"><div class="typing-dots-wrap"><div class="dot-main"></div></div></div>';
+        return d;
+    }
+
+    // ── Copy buttons ──
+    function addCopyBtns(el) {
+        el.querySelectorAll('pre').forEach(pre => {
+            if (pre.querySelector('.copy-btn')) return;
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn'; btn.textContent = 'Copy';
+            btn.onclick = () => {
+                navigator.clipboard.writeText(pre.querySelector('code')?.innerText || pre.innerText);
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            };
+            pre.appendChild(btn);
+        });
+    }
+
+    // ── Render bubble ──
+    function makeBubble(msg, animate) {
+        const row = document.createElement('div');
+        const isUser = (msg.sender === 'You');
+        row.className = 'msg-row ' + (isUser ? 'user-row' : 'bot-row') + (animate ? ' msg-enter' : '');
+
+        if (!isUser) {
+            const lbl = document.createElement('div');
+            lbl.className = 'meta-label';
+            lbl.textContent = 'Mia';
+            row.appendChild(lbl);
+        }
+
+        const txt = document.createElement('div');
+        txt.className = 'message-text';
+
+        if (isUser) {
+            txt.textContent = msg.text;
+        } else {
+            const raw = msg.text || '';
+
+            // YouTube split
+            if (raw.includes('##YT_SPLIT##')) {
+                const parts = raw.split('##YT_SPLIT##');
+                txt.innerHTML = DOMPurify.sanitize(marked.parse(parts[0].trim()));
+                const ytWrap = document.createElement('div');
+                ytWrap.innerHTML = DOMPurify.sanitize(parts[1]);
+                row.appendChild(txt);
+                row.appendChild(ytWrap);
+                addCopyBtns(row);
+                return row;
+            }
+
+            // Image HTML
+            if (raw.includes('mia-img-wrap')) {
+                txt.innerHTML = DOMPurify.sanitize(raw, { ADD_TAGS:['img'], ADD_ATTR:['src','alt','class','onload','onerror','onclick'] });
+            } else {
+                txt.innerHTML = DOMPurify.sanitize(marked.parse(raw));
+            }
+            addCopyBtns(txt);
+        }
+
+        row.appendChild(txt);
+        return row;
+    }
+
+    // ── Load initial messages ──
+    const initMsgs = JSON.parse(document.getElementById('msgData').textContent);
+    initMsgs.forEach(m => stream.appendChild(makeBubble(m, false)));
+    stream.scrollTop = stream.scrollHeight;
+
+    // ── Limits UI ──
+    function updateLimitsUI() {
+        const chipMsgs = document.getElementById('chipMsgs');
+        const chipImgs = document.getElementById('chipImgs');
+        const nudge    = document.getElementById('signupNudge');
+
+        document.getElementById('msgsLeft').textContent = Math.max(0, msgsLeft);
+        document.getElementById('imgsLeft').textContent = Math.max(0, imgsLeft);
+
+        if (msgsLeft <= 5) chipMsgs.className = 'limit-chip warn';
+        if (msgsLeft <= 0) chipMsgs.className = 'limit-chip done';
+        if (imgsLeft <= 1) chipImgs.className = 'limit-chip warn';
+        if (imgsLeft <= 0) chipImgs.className = 'limit-chip done';
+
+        if (msgsLeft <= 5 || imgsLeft <= 1) nudge.style.display = 'flex';
+    }
+
+    // ── Popup ──
+    function showPopup(title, sub) {
+        if (title) document.getElementById('popupTitle').textContent = title;
+        if (sub) document.getElementById('popupSub').textContent = sub;
+        document.getElementById('signupPopup').classList.add('show');
+    }
+    function closePopup() {
+        document.getElementById('signupPopup').classList.remove('show');
+    }
+    document.getElementById('signupPopup').addEventListener('click', function(e) {
+        if (e.target === this) closePopup();
+    });
+
+    // ── Image preview ──
+    imgInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (!file) return;
+        pendingImg = file;
+        imgThumb.src = URL.createObjectURL(file);
+        imgName.textContent = file.name;
+        imgPreview.classList.add('show');
+    });
+    imgRemove.addEventListener('click', function() {
+        pendingImg = null;
+        imgInput.value = '';
+        imgPreview.classList.remove('show');
+        imgThumb.src = '';
+    });
+
+    // ── Textarea auto-resize ──
+    chatInput.addEventListener('input', function() {
+        this.style.height = '38px';
+        this.style.height = Math.min(this.scrollHeight, 130) + 'px';
+    });
+
+    // ── Send image ──
+    async function sendImage() {
+        const caption = chatInput.value.trim();
+        chatInput.value = '';
+        chatInput.style.height = '38px';
+        imgPreview.classList.remove('show');
+        submitBtn.disabled = true;
+
+        const userRow = makeBubble({ sender:'You', text: (caption ? `[image] ${caption}` : '[image uploaded]') }, true);
+        stream.appendChild(userRow);
+        const typingEl = makeTyping();
+        stream.appendChild(typingEl);
+        stream.scrollTop = stream.scrollHeight;
+
+        const fd = new FormData();
+        fd.append('image', pendingImg);
+        if (caption) fd.append('caption', caption);
+        pendingImg = null; imgInput.value = '';
+
+        try {
+            const res  = await fetch('/send_image_guest', { method:'POST', body:fd });
+            const data = await res.json();
+            typingEl.remove();
+            submitBtn.disabled = false;
+
+            if (data.limit) {
+                showPopup('Feature limit reached', data.reply);
+                return;
+            }
+            const replyRow = makeBubble({ sender:'Mia', text:data.reply }, true);
+            stream.appendChild(replyRow);
+            stream.scrollTop = stream.scrollHeight;
+        } catch(e) {
+            typingEl.remove(); submitBtn.disabled = false;
+            stream.appendChild(makeBubble({ sender:'Mia', text:'Something went wrong. Try again.' }, true));
+            stream.scrollTop = stream.scrollHeight;
+        }
+    }
+
+    // ── Send text ──
+    async function sendText() {
+        if (pendingImg) { await sendImage(); return; }
+
+        const msg = chatInput.value.trim();
+        if (!msg) return;
+
+        if (msgsLeft <= 0) {
+            showPopup('Message limit reached 💬', 'You\'ve used all 20 guest messages. Create a free account to keep chatting with no limits!');
+            return;
+        }
+
+        const userRow = makeBubble({ sender:'You', text:msg }, true);
+        stream.appendChild(userRow);
+
+        chatInput.value = ''; chatInput.style.height = '38px';
+        submitBtn.disabled = true;
+
+        // Image skeleton or typing
+        const imgWords = ['generate','draw','create','make','image','picture','photo','art','illustration','paint'];
+        const isImgReq = imgsLeft > 0 && imgWords.some(k => msg.toLowerCase().includes(k));
+        let skeletonEl = null;
+        const typingEl = makeTyping();
+
+        if (isImgReq) {
+            skeletonEl = document.createElement('div');
+            skeletonEl.className = 'msg-row bot-row msg-enter';
+            skeletonEl.innerHTML =
+                '<div class="mia-img-skeleton">' +
+                '<div class="mia-img-spinner"></div>' +
+                '<span class="mia-img-gen-label">✨ Generating image...</span>' +
+                '</div>';
+            stream.appendChild(skeletonEl);
+        } else {
+            stream.appendChild(typingEl);
+        }
+        stream.scrollTop = stream.scrollHeight;
+
+        try {
+            const res  = await fetch('/send_guest', {
+                method:'POST',
+                headers:{ 'Content-Type':'application/json' },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+
+            if (skeletonEl) skeletonEl.remove(); else typingEl.remove();
+            submitBtn.disabled = false;
+
+            // Special limit signals
+            if (data.limit === 'imgs' || data.reply === '__LIMIT_IMGS__') {
+                showPopup('Image limit reached 🎨', 'You\'ve used all 5 guest images. Create a free account for unlimited image generation!');
+                return;
+            }
+            if (data.limit === 'msgs' || data.reply === '__LIMIT_MSGS__') {
+                showPopup('Message limit reached 💬', 'You\'ve used all 20 guest messages. Create a free account to keep chatting!');
+                return;
+            }
+
+            // Update counters
+            if (data.imgs_left !== undefined) imgsLeft = data.imgs_left;
+            if (data.msgs_left !== undefined) msgsLeft = data.msgs_left;
+            updateLimitsUI();
+
+            if (data.reply) {
+                stream.appendChild(makeBubble({ sender:'Mia', text:data.reply }, true));
+                stream.scrollTop = stream.scrollHeight;
+            }
+        } catch(e) {
+            if (skeletonEl) skeletonEl.remove(); else typingEl.remove();
+            submitBtn.disabled = false;
+            stream.appendChild(makeBubble({ sender:'Mia', text:'Something went wrong. Try again.' }, true));
+            stream.scrollTop = stream.scrollHeight;
+        }
+    }
+
+    submitBtn.addEventListener('click', sendText);
+    chatInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendText(); }
+    });
+
+    // Init limits UI
+    updateLimitsUI();
+</script>
+{% endraw %}
+</body>
+</html>
