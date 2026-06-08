@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('jarvis-dark');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.body.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
   <title>Jarvis</title>
@@ -1430,11 +1443,11 @@
 
 <!-- ════════ SCRIPTS ════════ -->
 <script>
-  // ── Dark mode — synced across all pages via localStorage 'Jarvis-dark' ──
+  // ── Dark mode — synced across all pages via localStorage 'jarvis-dark' ──
   // Key logic matches chat.html: truthy value = dark mode on
   const darkToggle = document.getElementById('darkToggle');
 
-  function getDark() { return !!localStorage.getItem('Jarvis-dark'); }
+  function getDark() { return !!localStorage.getItem('jarvis-dark'); }
 
   function applyTheme() {
     const dark = getDark();
@@ -1445,13 +1458,13 @@
 
   // Sync instantly when another page/tab changes the theme
   window.addEventListener('storage', function(e) {
-    if (e.key === 'Jarvis-dark') applyTheme();
+    if (e.key === 'jarvis-dark') applyTheme();
   });
 
   window.toggleDarkMode = window.toggleDark = function() {
     const dark = getDark();
-    if (dark) localStorage.removeItem('Jarvis-dark');
-    else localStorage.setItem('Jarvis-dark', '1');
+    if (dark) localStorage.removeItem('jarvis-dark');
+    else localStorage.setItem('jarvis-dark', '1');
     applyTheme();
   };
 

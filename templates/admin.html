@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('jarvis-dark');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.body.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"> <link rel="manifest" href="/static/manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1343,9 +1356,9 @@ tr:hover td { background: rgba(0,0,0,0.015); }
 function applyTheme(dark) {
   document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
   document.querySelectorAll('.toggle-pill').forEach(p => p.classList.toggle('on', dark));
-  localStorage.setItem('adminTheme', dark ? 'dark' : 'light');
+  localStorage.setItem('jarvis-dark', dark ? 'dark' : 'light');
 }
-(function(){ applyTheme(localStorage.getItem('adminTheme') === 'dark'); })();
+(function(){ applyTheme(localStorage.getItem('jarvis-dark') === 'dark'); })();
 function toggleTheme() { applyTheme(document.body.getAttribute('data-theme') !== 'dark'); }
 
 // DRAWER

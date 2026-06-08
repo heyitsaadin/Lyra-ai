@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('jarvis-dark');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.body.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    
     <title>Jarvis Quiz</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <style>
@@ -21,7 +34,7 @@
             --radius-lg:    16px;
             --ease:         cubic-bezier(.4,0,.2,1);
         }
-        body.dark-mode {
+        [data-theme="dark"] {
             --bg:           #0c0c0c;
             --surface:      #161616;
             --text:         #f0f0f0;
@@ -225,7 +238,7 @@
             position: absolute; inset: 1.5px; border-radius: var(--radius-lg);
             background: var(--bg);
         }
-        body.dark-mode .exam-btn-inner { background: var(--bg); }
+        [data-theme="dark"] .exam-btn-inner { background: var(--bg); }
 
         .exam-btn {
             position: relative; z-index: 2; width: 100%;
@@ -235,7 +248,7 @@
             display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: color .15s, transform .12s;
         }
-        body.dark-mode .exam-btn { color: #93c5fd; }
+        [data-theme="dark"] .exam-btn { color: #93c5fd; }
         .exam-btn svg { width: 16px; height: 16px; stroke: currentColor; flex-shrink: 0; }
         .exam-btn:active { transform: scale(.96); }
         .exam-btn:disabled { opacity: .32; cursor: not-allowed; }
@@ -527,9 +540,9 @@
             animation: fadeSlideUp .25s var(--ease) both;
         }
         .exam-q-feedback.correct { background: var(--success-bg); color: #065f46; border-left: 2.5px solid var(--success); }
-        body.dark-mode .exam-q-feedback.correct { color: #6ee7b7; }
+        [data-theme="dark"] .exam-q-feedback.correct { color: #6ee7b7; }
         .exam-q-feedback.wrong   { background: var(--error-bg);   color: #7f1d1d; border-left: 2.5px solid var(--error); }
-        body.dark-mode .exam-q-feedback.wrong   { color: #fca5a5; }
+        [data-theme="dark"] .exam-q-feedback.wrong   { color: #fca5a5; }
         .exam-q-feedback.skipped { background: var(--bg); color: var(--text-muted); border-left: 2.5px solid var(--border); }
         .fb-icon { font-size: 13px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
         .exam-q-feedback strong { font-weight: 700; }
@@ -851,16 +864,16 @@ const darkToggle = document.getElementById('darkToggle');
 const moonIcon   = document.getElementById('moonIcon');
 const sunIcon    = document.getElementById('sunIcon');
 function applyDark(on) {
-    document.body.classList.toggle('dark-mode', on);
+    document.body.setAttribute('data-theme', on ? 'dark' : 'light', on);
     moonIcon.style.display = on ? 'none' : '';
     sunIcon.style.display  = on ? ''     : 'none';
 }
-applyDark(localStorage.getItem('darkMode') === '1');
+applyDark(localStorage.getItem('jarvis-dark') === '1');
 darkToggle.addEventListener('click', () => {
-    const on = document.body.classList.toggle('dark-mode');
+    const on = document.body.setAttribute('data-theme', on ? 'dark' : 'light');
     moonIcon.style.display = on ? 'none' : '';
     sunIcon.style.display  = on ? ''     : 'none';
-    localStorage.setItem('darkMode', on ? '1' : '0');
+    localStorage.setItem('jarvis-dark', on ? '1' : '');
 });
 
 // ── Pill selectors ──

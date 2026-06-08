@@ -1,6 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('jarvis-dark');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                document.body.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.body.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+    
     <title>Jarvis - Login</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
@@ -380,7 +393,7 @@
     </style>
     <script>
         /* Apply theme immediately — same key chat.html uses */
-        if (localStorage.getItem('Jarvis-dark')) {
+        if (localStorage.getItem('jarvis-dark')) {
             document.documentElement.setAttribute('data-theme', 'dark');
         } else {
             document.documentElement.setAttribute('data-theme', 'light');
@@ -513,13 +526,13 @@
     <div class="credit">created by Aadin</div>
 
     <script>
-        /* ── Theme: sync with chat.html (data-theme on body, Jarvis-dark key) ── */
+        /* ── Theme: sync with chat.html (data-theme on body, jarvis-dark key) ── */
         (function () {
-            const theme = localStorage.getItem('Jarvis-dark') ? 'dark' : 'light';
+            const theme = localStorage.getItem('jarvis-dark') ? 'dark' : 'light';
             document.body.setAttribute('data-theme', theme);
         })();
         window.addEventListener('storage', function (e) {
-            if (e.key === 'Jarvis-dark') {
+            if (e.key === 'jarvis-dark') {
                 document.body.setAttribute('data-theme', e.newValue ? 'dark' : 'light');
             }
         });
