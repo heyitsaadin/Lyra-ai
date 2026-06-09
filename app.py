@@ -25,10 +25,13 @@ from PIL import Image as PILImage
 from datetime import datetime as _dt
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", secrets.token_hex(32))
+# Use a stable secret key for session persistence across restarts
+app.secret_key = os.environ.get("SECRET_KEY", "jarvis_ai_stable_secret_key_8a5c26c")
 app.config["SESSION_PERMANENT"] = True
-app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=90)
 app.config["MAX_COOKIE_SIZE"] = 4093
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = True
 
 # ── Environment validation ──
 REQUIRED_ENV_VARS = ["DATABASE_URL", "GROQ_API_KEY", "ADMIN_PASSWORD"]
@@ -57,7 +60,7 @@ ADMIN_BASE     = f"/admin/{ADMIN_SLUG}"
 IST            = timezone(timedelta(hours=5, minutes=30))
 DATABASE_URL   = os.environ["DATABASE_URL"]
 
-app.permanent_session_lifetime = timedelta(days=7)
+app.permanent_session_lifetime = timedelta(days=90)
 
 _malayalam = os.environ.get("MALAYALAM_BAD_WORDS", "")
 _english   = os.environ.get("ENGLISH_BAD_WORDS", "")
