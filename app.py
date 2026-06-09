@@ -934,6 +934,7 @@ def google_search(query):
     api_key = os.environ.get("GOOGLE_API_KEY", "")
     cse_id  = os.environ.get("GOOGLE_CSE_ID", "")
     if not api_key or not cse_id:
+        print(f"[GOOGLE SEARCH] Missing API keys. KEY: {bool(api_key)}, CSE: {bool(cse_id)}")
         return None
     try:
         resp = requests.get(
@@ -941,7 +942,10 @@ def google_search(query):
             params={"key": api_key, "cx": cse_id, "q": query, "num": 5},
             timeout=10
         )
+        print(f"[GOOGLE SEARCH] API status: {resp.status_code}")
         data = resp.json()
+        if "error" in data:
+            print(f"[GOOGLE SEARCH] API Error: {data['error'].get('message')}")
         items = data.get("items", [])
         if not items:
             return None
@@ -1008,8 +1012,8 @@ def _do_google_search(query, user_msg=None):
                 json={
                     "model": "llama-3.1-8b-instant",
                     "messages": [
-                        {"role": "system", "content": "Answer the user's question using the search results provided. Be concise, warm, and conversational. Don't mention 'search results' or 'Wikipedia' explicitly in the text unless natural. Focus on the facts."},
-                        {"role": "user", "content": f"Question: {user_msg}\n\nSearch Results:\n{context}"}
+                        {"role": "system", "content": "You are Jarvis. Answer the user's question using ONLY the provided search results. If the results contain the answer, state it clearly and warmly. If the results are ambiguous or don't directly answer the question, say you're not sure but provide the best info available. NEVER claim information is 'outdated' or 'former' unless the search results explicitly say so. Be factual and concise."},
+                        {"role": "user", "content": f"User Question: {user_msg}\n\nSearch Results for context:\n{context}"}
                     ],
                     "max_tokens": 300
                 },
