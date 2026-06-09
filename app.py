@@ -165,7 +165,7 @@ def _run_image_analysis(img_prompt, session_messages_copy, img_src, username, ch
         description = res.json()["choices"][0]["message"]["content"].strip()
         if description:
             analysis_entry = {
-                "sender": "Mia",
+                "sender": "Jarvis",
                 "text": f"[IMAGE ANALYSIS RESULT]\n{description[:300]}"
             }
             session_messages_copy.append(analysis_entry)
@@ -213,9 +213,9 @@ def get_greeting(username):
     greetings = [
         f"Good {period}, {username}! 😊 Hope you're having a great one — what's on your mind?",
         f"Hey {username}! 👋 Good {period} to you! Ready to help whenever you are.",
-        f"Good {period}, {username}! ✨ Great to see you — what can Mia do for you today?",
+        f"Good {period}, {username}! ✨ Great to see you — what can Jarvis do for you today?",
         f"Hey hey, {username}! 🌟 Good {period}! I'm all ears — what do you need?",
-        f"Good {period}, {username}! 🤖 Mia online and ready. What's up?",
+        f"Good {period}, {username}! 🤖 Jarvis online and ready. What's up?",
     ]
     return greetings[datetime.now(IST).minute % len(greetings)]
 
@@ -642,7 +642,7 @@ def send_discord_alert(user, reason, message):
     if not WEBHOOK_URL:
         return
     payload = {
-        "username": "Mia Security",
+        "username": "Jarvis Security",
         "embeds": [{
             "title": "⚠️ Security Alert",
             "description": f"**User:** {user}\n**Reason:** {reason}\n**Message:** {message}",
@@ -1178,7 +1178,7 @@ def ask_jarvis_brain(prompt, history=None):
     headers = {"Authorization": "Bearer " + API_KEY, "Content-Type": "application/json"}
     clean_msgs, last_img_prompt, last_img_analysis = _build_clean_history(history)
     system_msg = (
-        "You are Mia, a personal AI assistant made by Aadin. "
+        "You are Jarvis, a personal AI assistant made by Aadin. "
         "Be warm, friendly, conversational - like a smart best friend. "
         "Match the user's energy. Use emojis naturally but sparingly.\n\n"
         "FORMATTING: Code -> markdown code blocks with language tag. "
@@ -1285,7 +1285,7 @@ def ask_jarvis(prompt, history=None, wants_code=False):
 - Only give a longer reply if the user explicitly asks for detail, explanation, a tutorial, a recipe, or a list.
 - Use **bold** for headings if needed. Numbered lists for steps. Bullet points for items.
 - NEVER use code blocks for recipes, instructions, or any non-code content."""
-    system_msg = f"""You are Mia, a personal AI assistant created by Aadin. You have a warm, friendly, and engaging personality — like a smart best friend who genuinely enjoys helping.
+    system_msg = f"""You are Jarvis, a personal AI assistant created by Aadin. You have a warm, friendly, and engaging personality — like a smart best friend who genuinely enjoys helping.
 
 PERSONALITY:
 - Be conversational, warm, and natural. Never sound robotic or corporate.
@@ -1375,7 +1375,7 @@ def _build_reply(user_msg):
         except Exception:
             pass
     if contains_bad_words(user_msg):
-        send_discord_alert(session["user"], "Abusive language toward Mia or Aadin", user_msg)
+        send_discord_alert(session["user"], "Abusive language toward Jarvis or Aadin", user_msg)
     _img_question_triggers = [
         "color", "colour", "what is in", "what's in", "whats in",
         "describe", "explain", "what does", "tell me about", "analyse",
@@ -1579,7 +1579,7 @@ def login():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [{"sender": "Mia", "text": greeting}]
+            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
             return redirect("/landing")
         else:
             error = "Incorrect username or password"
@@ -1613,7 +1613,7 @@ def signup():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [{"sender": "Mia", "text": greeting}]
+            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
             return redirect("/landing")
     return render_template("signup.html", error=error, username_taken=username_taken)
 
@@ -1676,7 +1676,7 @@ def guest_entry():
     session["guest_analyses"]    = 0      # image analyses
     session["guest_edits"]       = 0      # image edits
     session["guest_quiz_done"]   = False  # quiz used
-    session["messages"]          = [{"sender": "Mia", "text": "Hey! 👋 You're in guest mode — I'm Mia, your AI assistant. Try me out! (Note: chats won't be saved and some features are limited)"}]
+    session["messages"]          = [{"sender": "Jarvis", "text": "Hey! 👋 You're in guest mode — I'm Jarvis, your AI assistant. Try me out! (Note: chats won't be saved and some features are limited)"}]
     session.modified = True
     return redirect("/chat_guest")
 
@@ -1798,7 +1798,7 @@ def send_guest():
 
     session["guest_msgs"] = session.get("guest_msgs", 0) + 1
     compact = _compact_for_session(reply)
-    session["messages"].append({"sender": "Mia", "text": compact})
+    session["messages"].append({"sender": "Jarvis", "text": compact})
     session.modified = True
 
     imgs_left = max(0, GUEST_IMG_LIMIT - session["guest_imgs"])
@@ -1860,7 +1860,7 @@ def send_image_guest():
 
         user_label = f"[image uploaded] {caption}" if caption else "[image uploaded]"
         session["messages"].append({"sender": "You", "text": user_label})
-        session["messages"].append({"sender": "Mia", "text": "[IMAGE ANALYSIS RESULT]\n" + reply[:300]})
+        session["messages"].append({"sender": "Jarvis", "text": "[IMAGE ANALYSIS RESULT]\n" + reply[:300]})
         session.modified = True
         return jsonify({"reply": reply, "intent": intent})
     except Exception as e:
@@ -1934,8 +1934,8 @@ def send():
     update_profile(session["user"], user_msg, "You")
     reply = _build_reply(user_msg)
     session_text = _compact_for_session(reply)
-    session["messages"].append({"sender": "Mia", "text": session_text})
-    update_profile(session["user"], reply, "Mia")
+    session["messages"].append({"sender": "Jarvis", "text": session_text})
+    update_profile(session["user"], reply, "Jarvis")
     session.modified = True
     msg_count = len(session["messages"])
     if msg_count % 10 == 0 and msg_count > 0:
@@ -1975,8 +1975,8 @@ def generate_image_route():
         reply, _ = generate_image_nvidia(prompt)
     else:
         reply = generate_image(prompt)
-    session["messages"].append({"sender": "Mia", "text": _compact_for_session(reply)})
-    update_profile(session["user"], "image_generated", "Mia")
+    session["messages"].append({"sender": "Jarvis", "text": _compact_for_session(reply)})
+    update_profile(session["user"], "image_generated", "Jarvis")
     _msgs_copy = list(session["messages"])
     threading.Thread(
         target=_auto_analyse_generated_image,
@@ -1993,7 +1993,7 @@ def new_chat():
     _flush_chat_session()
     username = session["user"]
     greeting = get_greeting(username)
-    session["messages"] = [{"sender": "Mia", "text": greeting}]
+    session["messages"] = [{"sender": "Jarvis", "text": greeting}]
     session["chat_key"] = secrets.token_hex(8)
     session.pop("active_project_id", None)
     session.modified = True
@@ -2103,9 +2103,9 @@ def send_image():
             stored_reply = f"[IMAGE ANALYSIS RESULT]\n{reply[:300]}"
         else:
             stored_reply = "[IMAGE EDITED: result displayed to user]"
-        session["messages"].append({"sender": "Mia", "text": stored_reply})
+        session["messages"].append({"sender": "Jarvis", "text": stored_reply})
         update_profile(session["user"], user_label, "You")
-        update_profile(session["user"], "image_analysed_or_edited", "Mia")
+        update_profile(session["user"], "image_analysed_or_edited", "Jarvis")
         session.modified = True
         return jsonify({"reply": reply, "intent": intent})
     except Exception as e:
@@ -2164,7 +2164,7 @@ def project_chat_enter(project_id):
     heartbeat(session["user"])
     username = session["user"]
     greeting = get_greeting(username)
-    session["messages"] = [{"sender": "Mia", "text": greeting}]
+    session["messages"] = [{"sender": "Jarvis", "text": greeting}]
     session["chat_key"] = secrets.token_hex(8)
     session["active_project_id"] = project_id
     session.modified = True
@@ -2190,7 +2190,7 @@ def project_chat_resume(project_id, session_key):
         session["messages"] = _json_mod.loads(row["messages"])
         session["chat_key"] = session_key
     else:
-        session["messages"] = [{"sender": "Mia", "text": get_greeting(session["user"])}]
+        session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
         session["chat_key"] = secrets.token_hex(8)
     session["active_project_id"] = project_id
     session.modified = True
@@ -2307,7 +2307,7 @@ def account_delete_chat(session_key):
         return jsonify({"ok": False}), 401
     delete_chat_session(session["user"], session_key)
     if session.get("chat_key") == session_key:
-        session["messages"] = [{"sender": "Mia", "text": get_greeting(session["user"])}]
+        session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
         session["chat_key"] = secrets.token_hex(8)
         session.modified = True
     return jsonify({"ok": True}), 200
@@ -2338,7 +2338,7 @@ def account_delete_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [{"sender": "Mia", "text": get_greeting(session["user"])}]
+    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200
@@ -2374,7 +2374,7 @@ def share_chat():
                 title = clean[:60]
                 break
     if not title:
-        title = "Mia Chat"
+        title = "Jarvis Chat"
     clean_msgs = []
     for m in msgs:
         txt = m.get("text", "")
@@ -2427,7 +2427,7 @@ def clear_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [{"sender": "Mia", "text": get_greeting(session["user"])}]
+    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200
@@ -2778,7 +2778,7 @@ def admin_analyse_chats(username):
     groq_summary = profile.get("groq_summary", "")
     if not msg_count:
         return jsonify({"error": "No usage data found for this user"}), 404
-    sys_p = """You are an AI analyst reviewing aggregated usage metadata about a user of a chatbot called Mia.
+    sys_p = """You are an AI analyst reviewing aggregated usage metadata about a user of a chatbot called Jarvis.
 You are working from pre-computed statistics only — no raw messages are available.
 Your job: produce a structured JSON report.
 Reply ONLY as raw JSON — no markdown, no explanation outside JSON.

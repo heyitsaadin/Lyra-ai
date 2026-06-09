@@ -1385,7 +1385,7 @@
                 <p class="ver">VERSION 1.0 · BETA</p>
                 <p>Jarvis is a personal AI assistant built to help with everyday tasks — questions, code, math, and more.</p>
                 <p>Powered by Groq LLaMA with a custom security layer built from scratch.</p>
-                <p class="tag">MIA CORE // <span>AADIN</span></p>
+                <p class="tag">JARVIS CORE // <span>AADIN</span></p>
             </div>
         </div>
 
@@ -1403,7 +1403,7 @@
                 <p class="ver">DEVELOPER · CREATOR</p>
                 <p>Jarvis was designed and built by Aadin, a self-taught developer passionate about AI and cybersecurity.</p>
                 <p>Built entirely on a mobile phone — backend, security layer, and UI — as part of a vision for AI-powered secure systems.</p>
-                <p class="tag">MIA CORE // <span>AADIN</span></p>
+                <p class="tag">JARVIS CORE // <span>AADIN</span></p>
             </div>
         </div>
 
@@ -1714,7 +1714,7 @@
 
 <script>
     // ── Sound Engine (iOS-style noise burst taps) ──
-    const MiaSound = (() => {
+    const JarvisSound = (() => {
         let ctx = null;
         function _ctx() {
             if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2137,7 +2137,7 @@
                 const lbl = document.createElement('div'); lbl.className = 'meta-label'; lbl.textContent = 'Jarvis';
                 const txt = document.createElement('div'); txt.className = 'message-text';
                 if (data.image_url) {
-                    MiaSound.image();
+                    JarvisSound.image();
                     txt.innerHTML = '<div class="jarvis-img-wrap"><img class="jarvis-img" src="' + data.image_url + '" alt="' + prompt + '"><div class="jarvis-img-footer"><span class="jarvis-img-caption">' + prompt + '</span><button class="jarvis-img-dl" onclick="downloadImage(\'' + data.image_url + '\',\'jarvis-create\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</button></div></div>';
                     txt.querySelectorAll('.jarvis-img').forEach(img => {
                         const skel = document.createElement('div');
@@ -2173,7 +2173,7 @@
         chatInput.value = ''; chatInput.style.height = '38px';
         inputDock.classList.remove('has-content');
         submitBtn.disabled = true;
-        MiaSound.send();
+        JarvisSound.send();
 
         // Detect image generation request — show skeleton instead of typing dots
         const _imgKeywords = ['generate', 'draw', 'create', 'make', 'show', 'paint', 'sketch', 'render', 'image', 'picture', 'photo', 'art', 'illustration', 'anime', 'portrait', 'wallpaper'];
@@ -2216,15 +2216,15 @@
                 stream.appendChild(replyBubble);
                 stream.appendChild(typingEl);
                 stream.scrollTop = stream.scrollHeight;
-                if (data.reply.includes('jarvis-img-wrap')) MiaSound.image();
-                else MiaSound.reply();
+                if (data.reply.includes('jarvis-img-wrap')) JarvisSound.image();
+                else JarvisSound.reply();
             }
         })
         .catch(() => {
             if (imgSkeletonEl) { imgSkeletonEl.remove(); imgSkeletonEl = null; }
             else { typingEl.style.display = 'none'; stopTypingPhase(typingEl); }
             submitBtn.disabled = false;
-            MiaSound.error();
+            JarvisSound.error();
             const errBubble = makeBubble({ sender: 'Jarvis', text: 'Something went wrong. Try again.' }, false, stream);
             stream.appendChild(errBubble);
             stream.appendChild(typingEl);
