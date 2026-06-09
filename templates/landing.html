@@ -545,6 +545,20 @@
     .redirect-logo {
       width:52px; height:52px; background:var(--tan); border-radius:16px;
       display:flex; align-items:center; justify-content:center;
+      position:relative;
+    }
+    .redirect-logo svg {
+      display:none;
+    }
+    .redirect-spinner {
+      width:32px; height:32px;
+      border:3px solid rgba(0,0,0,0.15);
+      border-top-color:rgba(0,0,0,0.8);
+      border-radius:50%;
+      animation:spinLoad 0.8s linear infinite;
+    }
+    @keyframes spinLoad {
+      to { transform:rotate(360deg); }
     }
     .redirect-name {
       font-family:'Barlow Condensed',sans-serif;
@@ -919,17 +933,7 @@
   <div class="redirect-bg"></div>
   <div class="redirect-content">
     <div class="redirect-logo">
-      <svg viewBox="0 0 18 18" width="32" height="32" fill="currentColor">
-        <rect x="0" y="0" width="3" height="2"/><rect x="15" y="0" width="3" height="2"/>
-        <rect x="3" y="2" width="12" height="2"/>
-        <rect x="0" y="4" width="3" height="7"/><rect x="15" y="4" width="3" height="7"/>
-        <rect x="5" y="6" width="3" height="2"/><rect x="10" y="6" width="3" height="2"/>
-        <rect x="3" y="11" width="5" height="2"/><rect x="12" y="11" width="3" height="1"/>
-        <rect x="11" y="12" width="4" height="1"/>
-        <rect x="5" y="13" width="3" height="2"/><rect x="9" y="13" width="4" height="1"/>
-        <rect x="8" y="14" width="4" height="1"/><rect x="8" y="15" width="3" height="1"/>
-        <rect x="8" y="16" width="2" height="1"/>
-      </svg>
+      <div class="redirect-spinner"></div>
     </div>
     <div class="redirect-name">Jarvis</div>
     <div class="redirect-dots"><span></span><span></span><span></span></div>

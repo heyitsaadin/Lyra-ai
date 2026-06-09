@@ -2796,13 +2796,44 @@
 
     // ── Image download ──
     function downloadImage(url, prompt) {
-        fetch(url).then(r => r.blob()).then(blob => {
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = (prompt || 'jarvis-image') + '.jpg';
-            a.click();
-            setTimeout(() => URL.revokeObjectURL(a.href), 3000);
-        }).catch(() => window.open(url, '_blank'));
+        const filename = (prompt || 'jarvis-image') + '.jpg';
+        
+        // Try fetch first (works for same-origin or CORS-enabled)
+        fetch(url, { mode: 'cors' })
+            .then(r => {
+                if (!r.ok) throw new Error('Failed to fetch image');
+                return r.blob();
+            })
+            .then(blob => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+            })
+            .catch(() => {
+                // Fallback: use XMLHttpRequest for better CORS handling
+                const xhr = new XMLHttpRequest();
+                xhr.responseType = 'blob';
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(xhr.response);
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+                    } else {
+                        window.open(url, '_blank');
+                    }
+                };
+                xhr.onerror = () => window.open(url, '_blank');
+                xhr.open('GET', url);
+                xhr.send();
+            });
     }
 
     // ── Clear all chats ──
