@@ -16,7 +16,7 @@
     
     <title>Jarvis AI</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
     <script>
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
@@ -898,7 +898,7 @@
         .message-stream {
             flex: 1; overflow-y: auto;
             padding: 72px 4px 200px 4px;
-            padding-top: calc(88px + env(safe-area-inset-top, 0px));
+            padding-top: calc(110px + env(safe-area-inset-top, 0px));
             scroll-behavior: smooth;
         }
         .message-stream::-webkit-scrollbar { width: 0; background: transparent; }
@@ -1248,7 +1248,7 @@
             /* ── Message stream ── */
             .message-stream {
                 padding: 72px 0 230px !important;
-                padding-top: calc(88px + env(safe-area-inset-top, 0px)) !important;
+                padding-top: calc(110px + env(safe-area-inset-top, 0px)) !important;
                 max-width: 720px;
                 width: 100%;
                 margin: 0 auto;
