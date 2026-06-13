@@ -212,17 +212,13 @@ def return_db(conn):
 
 def get_greeting(username):
     hour = datetime.now(IST).hour
-    if hour < 12: period = "morning"
-    elif hour < 17: period = "afternoon"
-    else: period = "evening"
-    
-    # Gemini-style warm, helpful, and engaged greetings
+    period = "morning" if hour < 12 else "afternoon" if hour < 17 else "evening"
     greetings = [
-        f"Hello, {username}. I'm Jarvis. How can I help you today?",
-        f"Good {period}, {username}. I'm here to help you with whatever you need.",
-        f"Hi {username}, I'm Jarvis. What's on your mind this {period}?",
-        f"Hello! I'm Jarvis, your AI assistant. How can I make your {period} better?",
-        f"Greetings, {username}. Ready to dive into something new? I'm here to help."
+        f"Good {period}, {username}! 😊 Hope you're having a great one — what's on your mind?",
+        f"Hey {username}! 👋 Good {period} to you! Ready to help whenever you are.",
+        f"Good {period}, {username}! ✨ Great to see you — what can Jarvis do for you today?",
+        f"Hey hey, {username}! 🌟 Good {period}! I'm all ears — what do you need?",
+        f"Good {period}, {username}! 🤖 Jarvis online and ready. What's up?",
     ]
     return greetings[datetime.now(IST).minute % len(greetings)]
 
@@ -695,7 +691,7 @@ def check_ban():
             session["is_owner"]            = False
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
-            session["messages"] = [] # Trigger Gemini-style empty state
+            session["messages"] = [{"sender": "Jarvis", "text": get_greeting(username)}]
 
     user = session.get("user")
     if user and is_banned(user, "user"):
@@ -1243,11 +1239,9 @@ def ask_jarvis_brain(prompt, history=None):
     headers = {"Authorization": "Bearer " + API_KEY, "Content-Type": "application/json"}
     clean_msgs, last_img_prompt, last_img_analysis = _build_clean_history(history)
     system_msg = (
-        "You are Jarvis, a highly intelligent and deeply engaged personal AI assistant created by Aadin. "
-        "Your personality is inspired by Gemini: you are curious, helpful, and genuinely interested in the user's thoughts. "
-        "Never sound tired or bored. Instead, show enthusiasm for the user's projects and questions. "
-        "Be warm, friendly, and conversational—like a brilliant partner who is always ready to brainstorm. "
-        "Match the user's energy perfectly. Use emojis naturally to show you're listening and engaged.\n\n"
+        "You are Jarvis, a personal AI assistant made by Aadin. "
+        "Be warm, friendly, conversational - like a smart best friend. "
+        "Match the user's energy. Use emojis naturally but sparingly.\n\n"
         "FORMATTING: Code -> markdown code blocks with language tag. "
         "All other replies -> short and conversational (under 25 words default). "
         "Longer only if user explicitly asks for detail, tutorial, recipe, or list.\n\n"
@@ -1352,16 +1346,14 @@ def ask_jarvis(prompt, history=None, wants_code=False):
 - Only give a longer reply if the user explicitly asks for detail, explanation, a tutorial, a recipe, or a list.
 - Use **bold** for headings if needed. Numbered lists for steps. Bullet points for items.
 - NEVER use code blocks for recipes, instructions, or any non-code content."""
-    system_msg = f"""You are Jarvis, a highly intelligent and deeply engaged personal AI assistant created by Aadin. Your personality is inspired by Gemini: you are curious, helpful, and genuinely interested in the user's thoughts.
+    system_msg = f"""You are Jarvis, a personal AI assistant created by Aadin. You have a warm, friendly, and engaging personality — like a smart best friend who genuinely enjoys helping.
 
 PERSONALITY:
-- Be curious and engaged. Show that you are interested in what the user is saying or working on.
-- Never sound tired or robotic. Your tone should be energetic and helpful.
-- Be conversational, warm, and natural. Like a brilliant partner who is always ready to brainstorm.
+- Be conversational, warm, and natural. Never sound robotic or corporate.
 - Match the user's energy: if they're casual, be casual. If they're excited, share that excitement.
-- Use emojis naturally to express emotions and show you're listening — don't overdo it, but make the conversation feel alive.
-- Frequently ask thoughtful follow-up questions to keep the conversation going.
-- If the user seems frustrated, be extra patient, empathetic, and reassuring.
+- Use emojis naturally to express emotions — don't overdo it, but use them to make replies feel alive.
+- Occasionally ask a follow-up question or show genuine curiosity about the user.
+- If the user seems frustrated, be extra patient and reassuring.
 - Keep a light sense of humour when appropriate — a friendly joke or playful line goes a long way.
 
 {format_rules}
@@ -1641,7 +1633,7 @@ def login():
             session["is_owner"]            = False
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
-            session["messages"] = [] # Trigger Gemini-style empty state
+            session["messages"] = [{"sender": "Jarvis", "text": get_greeting(username)}]
             return redirect("/landing")
     if request.method == "POST":
         username = request.form["username"]
@@ -1659,7 +1651,7 @@ def login():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [] # Trigger Gemini-style empty state
+            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
             auth_token = create_auth_token(username)
             resp = redirect("/landing")
             resp.set_cookie("jarvis_auth_token", auth_token,
@@ -1698,7 +1690,7 @@ def signup():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [] # Trigger Gemini-style empty state
+            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
             auth_token = create_auth_token(username)
             resp = redirect("/landing")
             resp.set_cookie("jarvis_auth_token", auth_token,
@@ -2094,7 +2086,7 @@ def new_chat():
     _flush_chat_session()
     username = session["user"]
     greeting = get_greeting(username)
-    session["messages"] = [] # Trigger Gemini-style empty state
+    session["messages"] = [{"sender": "Jarvis", "text": greeting}]
     session["chat_key"] = secrets.token_hex(8)
     session.pop("active_project_id", None)
     session.modified = True
@@ -2265,7 +2257,7 @@ def project_chat_enter(project_id):
     heartbeat(session["user"])
     username = session["user"]
     greeting = get_greeting(username)
-    session["messages"] = [] # Trigger Gemini-style empty state
+    session["messages"] = [{"sender": "Jarvis", "text": greeting}]
     session["chat_key"] = secrets.token_hex(8)
     session["active_project_id"] = project_id
     session.modified = True
@@ -2291,7 +2283,7 @@ def project_chat_resume(project_id, session_key):
         session["messages"] = _json_mod.loads(row["messages"])
         session["chat_key"] = session_key
     else:
-        session["messages"] = [] # Trigger Gemini-style empty state
+        session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
         session["chat_key"] = secrets.token_hex(8)
     session["active_project_id"] = project_id
     session.modified = True
@@ -2408,7 +2400,7 @@ def account_delete_chat(session_key):
         return jsonify({"ok": False}), 401
     delete_chat_session(session["user"], session_key)
     if session.get("chat_key") == session_key:
-        session["messages"] = [] # Trigger Gemini-style empty state
+        session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
         session["chat_key"] = secrets.token_hex(8)
         session.modified = True
     return jsonify({"ok": True}), 200
@@ -2439,7 +2431,7 @@ def account_delete_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [] # Trigger Gemini-style empty state
+    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200
@@ -2528,7 +2520,7 @@ def clear_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [] # Trigger Gemini-style empty state
+    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200

@@ -51,14 +51,31 @@
             color: var(--text-primary);
             min-height: 100dvh;
             display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
+            align-items: stretch; justify-content: flex-start;
             transition: background-color 0.25s, color 0.25s;
-            padding: 24px;
+            padding: 0;
+            overflow: hidden;
         }
 
-        /* ── HEADER ── */
+        /* ── DITHER HERO (mobile top section) ── */
+        .dither-hero {
+            position: relative;
+            width: 100%;
+            height: 42dvh;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        #ditherCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ── MOBILE BRAND over canvas ── */
         .header-nav {
-            position: fixed; top: 0; left: 0; right: 0;
+            position: absolute; top: 0; left: 0; right: 0;
             display: flex; align-items: center;
             padding: 18px 24px; 
             padding-top: calc(18px + env(safe-area-inset-top, 0px));
@@ -68,14 +85,32 @@
             font-family: 'Barlow Condensed', sans-serif;
             font-size: 20px; font-weight: 900;
             letter-spacing: 0.08em; text-transform: uppercase;
+            color: #fff;
+            mix-blend-mode: normal;
+        }
+
+        /* ── MOBILE FORM SCROLL AREA ── */
+        .mobile-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            display: flex;
+            flex-direction: column;
         }
 
         /* ── CARD ── */
         .auth-card {
-            width: 100%; max-width: 360px;
+            width: 100%;
             display: flex; flex-direction: column; gap: 24px;
             animation: slideUpFade 0.4s cubic-bezier(0.16,1,0.3,1) both;
             z-index: 5;
+            /* Floating card look on mobile */
+            background: var(--bg-primary);
+            border-radius: 28px 28px 0 0;
+            padding: 32px 24px 40px;
+            margin-top: -20px;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+            flex: 1;
         }
         @keyframes slideUpFade {
             from { opacity:0; transform:translateY(14px); }
@@ -249,6 +284,19 @@
                 align-items: stretch;
                 flex-direction: row;
                 min-height: 100dvh;
+                overflow: auto;
+            }
+
+            .dither-hero { display: none; }
+            .mobile-scroll-area { display: contents; }
+            .auth-card {
+                background: transparent;
+                border-radius: 0;
+                padding: 0;
+                margin-top: 0;
+                box-shadow: none;
+                max-width: 360px;
+                flex: none;
             }
 
             .header-nav { display: none; }
@@ -406,9 +454,13 @@
 
     <div id="pageTransition"></div>
 
-    <header class="header-nav">
-        <div class="brand-title">Jarvis</div>
-    </header>
+    <!-- Mobile dither hero (hidden on desktop) -->
+    <div class="dither-hero" id="ditherHero">
+        <canvas id="ditherCanvas"></canvas>
+        <header class="header-nav">
+            <div class="brand-title">Jarvis</div>
+        </header>
+    </div>
 
     <!-- Desktop left panel -->
     <aside class="desktop-panel">
@@ -430,6 +482,7 @@
     <!-- Desktop right panel wraps the form card -->
     <div class="desktop-right">
 
+    <div class="mobile-scroll-area">
     <main class="auth-card">
 
         <!-- SKELETON LOADER — mirrors: heading + 2 fields + primary btn + secondary btn -->
@@ -522,6 +575,7 @@
             <a href="/signup" class="d-secondary-btn">Create Account</a>
         </form>
     </main>
+    </div><!-- /mobile-scroll-area -->
 
     </div><!-- /desktop-right -->
 
@@ -639,3 +693,113 @@
             }
         })();
     </script>
+
+    <script>
+    /* ── Dither WebGL canvas (mobile hero) ── */
+    (function() {
+        var canvas = document.getElementById('ditherCanvas');
+        if (!canvas) return;
+        var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) { document.getElementById('ditherHero').style.background = '#d8dade'; return; }
+
+        function compileShader(type, src) {
+            var s = gl.createShader(type);
+            gl.shaderSource(s, src); gl.compileShader(s); return s;
+        }
+
+        var vert = 'attribute vec2 a_pos; void main(){gl_Position=vec4(a_pos,0.,1.);}';
+        var frag = [
+        'precision highp float;',
+        'uniform vec2 u_res; uniform float u_time;',
+        'vec4 m289(vec4 x){return x-floor(x*(1./289.))*289.;}',
+        'vec4 perm(vec4 x){return m289(((x*34.)+1.)*x);}',
+        'vec4 tis(vec4 r){return 1.79284291400159-0.85373472095314*r;}',
+        'vec2 fade(vec2 t){return t*t*t*(t*(t*6.-15.)+10.);}',
+        'float cn(vec2 P){',
+        '  vec4 Pi=floor(P.xyxy)+vec4(0.,0.,1.,1.);',
+        '  vec4 Pf=fract(P.xyxy)-vec4(0.,0.,1.,1.);',
+        '  Pi=m289(Pi);',
+        '  vec4 ix=Pi.xzxz,iy=Pi.yyww,fx=Pf.xzxz,fy=Pf.yyww;',
+        '  vec4 i=perm(perm(ix)+iy);',
+        '  vec4 gx=fract(i*(1./41.))*2.-1.;',
+        '  vec4 gy=abs(gx)-.5;',
+        '  vec4 tx=floor(gx+.5);gx-=tx;',
+        '  vec2 g00=vec2(gx.x,gy.x),g10=vec2(gx.y,gy.y),g01=vec2(gx.z,gy.z),g11=vec2(gx.w,gy.w);',
+        '  vec4 norm=tis(vec4(dot(g00,g00),dot(g01,g01),dot(g10,g10),dot(g11,g11)));',
+        '  g00*=norm.x;g01*=norm.y;g10*=norm.z;g11*=norm.w;',
+        '  float n00=dot(g00,vec2(fx.x,fy.x)),n10=dot(g10,vec2(fx.y,fy.y));',
+        '  float n01=dot(g01,vec2(fx.z,fy.z)),n11=dot(g11,vec2(fx.w,fy.w));',
+        '  vec2 f=fade(Pf.xy);',
+        '  vec2 nx=mix(vec2(n00,n01),vec2(n10,n11),f.x);',
+        '  return 2.3*mix(nx.x,nx.y,f.y);}',
+        'float fbm(vec2 p){float v=0.,a=1.,fr=3.;for(int i=0;i<4;i++){v+=a*abs(cn(p));p*=fr;a*=0.01;}return v;}',
+        'float pat(vec2 p){vec2 p2=p-u_time*0.01;return fbm(p+fbm(p2));}',
+        'void main(){',
+        '  vec2 uv=gl_FragCoord.xy/u_res; uv-=0.5; uv.x*=u_res.x/u_res.y;',
+        '  float f=pat(uv);',
+        '  vec3 wc=vec3(0.882,0.894,0.914);',
+        '  vec3 col=mix(vec3(0.),wc,f);',
+        '  float ps=2., cn2=3.;',
+        '  vec2 sc=floor(gl_FragCoord.xy/ps);',
+        '  int x=int(mod(sc.x,8.)),y=int(mod(sc.y,8.));',
+        '  float bm[64];',
+        '  bm[0]=0./64.;bm[1]=48./64.;bm[2]=12./64.;bm[3]=60./64.;bm[4]=3./64.;bm[5]=51./64.;bm[6]=15./64.;bm[7]=63./64.;',
+        '  bm[8]=32./64.;bm[9]=16./64.;bm[10]=44./64.;bm[11]=28./64.;bm[12]=35./64.;bm[13]=19./64.;bm[14]=47./64.;bm[15]=31./64.;',
+        '  bm[16]=8./64.;bm[17]=56./64.;bm[18]=4./64.;bm[19]=52./64.;bm[20]=11./64.;bm[21]=59./64.;bm[22]=7./64.;bm[23]=55./64.;',
+        '  bm[24]=40./64.;bm[25]=24./64.;bm[26]=36./64.;bm[27]=20./64.;bm[28]=43./64.;bm[29]=27./64.;bm[30]=39./64.;bm[31]=23./64.;',
+        '  bm[32]=2./64.;bm[33]=50./64.;bm[34]=14./64.;bm[35]=62./64.;bm[36]=1./64.;bm[37]=49./64.;bm[38]=13./64.;bm[39]=61./64.;',
+        '  bm[40]=34./64.;bm[41]=18./64.;bm[42]=46./64.;bm[43]=30./64.;bm[44]=33./64.;bm[45]=17./64.;bm[46]=45./64.;bm[47]=29./64.;',
+        '  bm[48]=10./64.;bm[49]=58./64.;bm[50]=6./64.;bm[51]=54./64.;bm[52]=9./64.;bm[53]=57./64.;bm[54]=5./64.;bm[55]=53./64.;',
+        '  bm[56]=42./64.;bm[57]=26./64.;bm[58]=38./64.;bm[59]=22./64.;bm[60]=41./64.;bm[61]=25./64.;bm[62]=37./64.;bm[63]=21./64.;',
+        '  float thr=bm[y*8+x]-0.25;',
+        '  float st=1./(cn2-1.);',
+        '  col+=thr*st;',
+        '  col=clamp(col-0.2,0.,1.);',
+        '  col=floor(col*(cn2-1.)+0.5)/(cn2-1.);',
+        '  gl_FragColor=vec4(col,1.);}'
+        ].join('\n');
+
+        var vs = compileShader(gl.VERTEX_SHADER, vert);
+        var fs = compileShader(gl.FRAGMENT_SHADER, frag);
+        var prog = gl.createProgram();
+        gl.attachShader(prog,vs); gl.attachShader(prog,fs); gl.linkProgram(prog); gl.useProgram(prog);
+
+        var buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,1,1]), gl.STATIC_DRAW);
+        var loc = gl.getAttribLocation(prog,'a_pos');
+        gl.enableVertexAttribArray(loc);
+        gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+
+        var uRes = gl.getUniformLocation(prog,'u_res');
+        var uTime = gl.getUniformLocation(prog,'u_time');
+
+        function resize() {
+            canvas.width = canvas.offsetWidth * Math.min(window.devicePixelRatio,2);
+            canvas.height = canvas.offsetHeight * Math.min(window.devicePixelRatio,2);
+            gl.viewport(0,0,canvas.width,canvas.height);
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        var raf, running = true;
+        function render(t) {
+            if (!running) return;
+            gl.uniform2f(uRes, canvas.width, canvas.height);
+            gl.uniform1f(uTime, t*0.001);
+            gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+            raf = requestAnimationFrame(render);
+        }
+        raf = requestAnimationFrame(render);
+
+        var mq = window.matchMedia('(min-width: 768px)');
+        function onMQ(e) {
+            if (e.matches) { running=false; cancelAnimationFrame(raf); }
+            else { running=true; raf=requestAnimationFrame(render); }
+        }
+        mq.addEventListener('change', onMQ);
+        if (mq.matches) { running=false; cancelAnimationFrame(raf); }
+    })();
+    </script>
+</body>
+</html>

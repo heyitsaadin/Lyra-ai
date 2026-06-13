@@ -33,8 +33,8 @@
       --text-mid: rgba(245,245,245,0.65);
       --text-secondary: #8a8a8a;
       --ui-subtle: #1a1a1a;
-      --tan: #f5e3b0;
-      --tan-dim: rgba(245,227,176,0.1);
+      --tan: #5a6ff6;
+      --tan-dim: rgba(90,111,246,0.1);
       --red: #ef4444;
       --green: #10b981;
       --sidebar-width: 290px;
@@ -1249,10 +1249,10 @@
         Back
       </button>
 
-      <!-- App identity block -->
-      <div style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:18px;">
-        <div style="width:52px;height:52px;background:var(--text);border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg viewBox="0 0 18 20" width="26" height="26" fill="currentColor" style="color:var(--bg);">
+      <!-- ══ WA-style hero header ══ -->
+      <div style="text-align:center;padding:8px 0 22px;">
+        <div style="width:72px;height:72px;background:#5a6ff6;border-radius:22px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 8px 24px rgba(90,111,246,0.35);">
+          <svg viewBox="0 0 18 20" width="36" height="36" fill="#fff">
             <rect x="0" y="0" width="3" height="2"/><rect x="15" y="0" width="3" height="2"/>
             <rect x="3" y="2" width="12" height="2"/>
             <rect x="0" y="4" width="3" height="7"/><rect x="15" y="4" width="3" height="7"/>
@@ -1264,107 +1264,153 @@
             <rect x="8" y="16" width="2" height="1"/>
           </svg>
         </div>
-        <div>
-          <div style="font-size:17px;font-weight:800;letter-spacing:0.04em;color:var(--text);font-family:'Barlow Condensed','DM Sans',sans-serif;">JARVIS AI</div>
-          <div style="font-size:10px;color:var(--text-secondary);letter-spacing:1.2px;margin-top:2px;">VERSION 1.0 · OPEN SOURCE</div>
-        </div>
+        <div style="font-size:20px;font-weight:800;letter-spacing:0.06em;color:var(--text);font-family:'Barlow Condensed','DM Sans',sans-serif;">JARVIS AI</div>
+        <div style="font-size:11px;color:#5a6ff6;font-weight:600;letter-spacing:1px;margin-top:3px;">VERSION 1.0 · OPEN SOURCE</div>
+        <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;margin-top:8px;padding:0 10px;">Your personal AI assistant — chat, generate images, and get answers, instantly.</p>
       </div>
 
-      <!-- How it works -->
-      <div style="margin-bottom:16px;">
-        <div class="d-section-label">HOW IT WORKS</div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;">
-          <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
-            Jarvis is an AI chat assistant you can talk to like a real person. Type anything — questions, code, math, creative ideas — and Jarvis replies instantly.
-          </p>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <div style="display:flex;align-items:flex-start;gap:10px;">
-              <div style="width:28px;height:28px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Smart Chat</div><div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5;">Powered by Groq LLaMA — fast, context-aware responses with memory across your session.</div></div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:10px;">
-              <div style="width:28px;height:28px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-              </div>
-              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Image Generation</div><div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5;">Generate images with FLUX.1-schnell via Hugging Face — just ask Jarvis to draw something.</div></div>
-            </div>
-            <div style="display:flex;align-items:flex-start;gap:10px;">
-              <div style="width:28px;height:28px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              </div>
-              <div><div style="font-size:12px;font-weight:700;color:var(--text);">Secure by Design</div><div style="font-size:11.5px;color:var(--text-secondary);line-height:1.5;">Custom auth, rate limiting, content filtering, and encrypted sessions built from scratch.</div></div>
-            </div>
+      <!-- ══ HOW IT WORKS — WA feature-list card ══ -->
+      <div class="d-section-label">HOW IT WORKS</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px;">
+
+        <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:38px;height:38px;background:#5a6ff6;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Smart Chat</div>
+            <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.45;margin-top:1px;">Groq LLaMA powers fast, context-aware answers across your whole session.</div>
+          </div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-left:8px;opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:38px;height:38px;background:#7c5cbf;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Image Generation</div>
+            <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.45;margin-top:1px;">FLUX.1-schnell via Hugging Face — just ask Jarvis to draw anything.</div>
+          </div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-left:8px;opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:38px;height:38px;background:#10b981;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Secure by Design</div>
+            <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.45;margin-top:1px;">Custom auth, rate limiting, and content filtering — built from scratch.</div>
+          </div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-left:8px;opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:14px 16px;">
+          <div style="width:38px;height:38px;background:#f59e0b;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);">Project Management</div>
+            <div style="font-size:11.5px;color:var(--text-secondary);line-height:1.45;margin-top:1px;">Save and revisit your chats. Keep your sessions organised.</div>
+          </div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-left:8px;opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
 
-      <!-- Development -->
-      <div style="margin-bottom:16px;">
-        <div class="d-section-label">DEVELOPMENT</div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;">
-          <p style="font-size:12px;color:var(--text-secondary);line-height:1.65;margin-bottom:12px;">Jarvis is a fully <strong style="color:var(--text);">vibe-coded</strong> open-source project. No formal team — just one developer, a bunch of AI agents, and a relentless drive to ship.</p>
-          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;">AI Agents Used</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
-            <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Claude</span>
+      <!-- ══ DEVELOPMENT — WA feature-list card ══ -->
+      <div class="d-section-label">DEVELOPMENT</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px;">
+
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.65;">Fully <strong style="color:var(--text);">vibe-coded</strong> and open-source. No formal team — one developer, a handful of AI agents, and a relentless drive to ship.</div>
+        </div>
+
+        <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);">
+          <div style="width:38px;height:38px;background:#1a1a2e;border:1px solid var(--border);border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:14px;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;font-weight:700;color:var(--text);">Open Source on GitHub</div>
+            <div style="font-size:11px;color:#5a6ff6;">github.com/heyitsaadin/jarvis-ai</div>
+          </div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+
+        <div style="padding:12px 16px;">
+          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:0.5px;">AI AGENTS · PLATFORMS</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;">
+            <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:rgba(90,111,246,0.12);border:1px solid rgba(90,111,246,0.25);color:#5a6ff6;font-weight:600;">Claude</span>
             <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Gemini</span>
             <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">DeepSeek</span>
             <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Manus AI</span>
             <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">ChatGPT</span>
-          </div>
-          <div style="font-size:11px;color:var(--text-secondary);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.8px;">Platforms</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
             <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">GitHub</span>
             <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Acode</span>
-            <span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Vercel</span>
           </div>
-          <a href="https://github.com/heyitsaadin/jarvis-ai" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;text-decoration:none;color:var(--text);font-size:12.5px;font-weight:600;transition:opacity 0.15s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-            View Source on GitHub
-            <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-left:auto;opacity:0.4;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          </a>
         </div>
       </div>
 
-      <!-- Developer -->
-      <div style="margin-bottom:16px;">
-        <div class="d-section-label">THE DEVELOPER</div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;">
-          <div style="padding:14px 16px 12px;">
-            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-              <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#f5e3b0,#e0a878);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#1a1a1a;flex-shrink:0;font-family:'Barlow Condensed','DM Sans',sans-serif;">A</div>
-              <div>
-                <div style="font-size:14px;font-weight:800;color:var(--text);">Aadin Kc</div>
-                <div style="font-size:11px;color:var(--text-secondary);">+2 Student · Web Dev · AI Enthusiast</div>
-              </div>
-            </div>
-            <p style="font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:10px;">
-              A self-taught developer from Kerala, studying at PRM HSS Kollavalloor. Aadin builds real projects to learn — Jarvis is one of them. His goal is AI engineering, and he's getting there one commit at a time.
-            </p>
-            <p style="font-size:12px;color:var(--text-secondary);line-height:1.7;margin-bottom:12px;">
-              Skilled in HTML, CSS, Python, and C++. Comfortable building full-stack Flask apps, deploying on Vercel, and integrating AI APIs — all learned by doing.
-            </p>
-            <div style="display:flex;gap:7px;flex-wrap:wrap;">
-              <a href="https://github.com/heyitsaadin" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;text-decoration:none;color:var(--text);font-size:11.5px;font-weight:600;">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-                GitHub
-              </a>
-              <a href="https://www.linkedin.com/in/aadin-kc-128bb3371" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;text-decoration:none;color:var(--text);font-size:11.5px;font-weight:600;">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                LinkedIn
-              </a>
-              <a href="mailto:hey.itsaadin@gmail.com" style="display:flex;align-items:center;gap:5px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;text-decoration:none;color:var(--text);font-size:11.5px;font-weight:600;">
-                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                Email
-              </a>
-            </div>
-          </div>
-          <div style="border-top:1px solid var(--border);padding:10px 16px;background:var(--surface2);">
-            <p style="font-size:10.5px;color:var(--text-secondary);line-height:1.5;text-align:center;font-style:italic;">"AI isn't just technology to me. It's the closest thing to magic that actually makes sense." — Aadin</p>
+      <!-- ══ THE DEVELOPER — WA feature-list card ══ -->
+      <div class="d-section-label">THE DEVELOPER</div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:16px;">
+
+        <!-- Dev identity row -->
+        <div style="display:flex;align-items:center;padding:16px;border-bottom:1px solid var(--border);">
+          <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#5a6ff6,#7c5cbf);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:20px;color:#fff;flex-shrink:0;margin-right:14px;font-family:'Barlow Condensed','DM Sans',sans-serif;">A</div>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:var(--text);">Aadin Kc</div>
+            <div style="font-size:11px;color:var(--text-secondary);">Kerala, India · AI Engineering</div>
           </div>
         </div>
+
+        <!-- Bio rows WA-style -->
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5a6ff6" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">+2 student at PRM HSS Kollavalloor. Self-taught developer building real projects — not tutorials. Goal: AI engineering.</div>
+        </div>
+
+        <div style="display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#5a6ff6" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px;"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">Skilled in HTML, CSS, Python, and C++. Builds full-stack Flask apps, deploys on Vercel, and integrates AI APIs — all learned by doing.</div>
+        </div>
+
+        <!-- Social links as WA rows -->
+        <a href="https://github.com/heyitsaadin" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--text);">
+          <div style="width:34px;height:34px;background:var(--surface2);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:13px;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          </div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:600;">GitHub</div><div style="font-size:11px;color:var(--text-secondary);">heyitsaadin</div></div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+        <a href="https://www.linkedin.com/in/aadin-kc-128bb3371" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--text);">
+          <div style="width:34px;height:34px;background:#0a66c2;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:13px;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:600;">LinkedIn</div><div style="font-size:11px;color:var(--text-secondary);">aadin-kc</div></div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+        <a href="mailto:hey.itsaadin@gmail.com" style="display:flex;align-items:center;padding:13px 16px;text-decoration:none;color:var(--text);">
+          <div style="width:34px;height:34px;background:#ea4335;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-right:13px;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Email</div><div style="font-size:11px;color:var(--text-secondary);">hey.itsaadin@gmail.com</div></div>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.4;"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
       </div>
+
+      <!-- Quote footer -->
+      <div style="padding:12px 4px 8px;text-align:center;">
+        <p style="font-size:11px;color:var(--text-secondary);line-height:1.6;font-style:italic;">"AI isn't just technology to me. It's the closest thing to magic that actually makes sense." <span style="color:#5a6ff6;font-weight:600;">— Aadin</span></p>
+      </div>
+
+      <!-- WA-style CTA button -->
+      <a href="https://github.com/heyitsaadin/jarvis-ai" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:#5a6ff6;border-radius:14px;text-decoration:none;color:#fff;font-size:14px;font-weight:700;letter-spacing:0.02em;margin-top:4px;margin-bottom:8px;box-shadow:0 4px 16px rgba(90,111,246,0.35);">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View Source on GitHub
+      </a>
 
     </div>
 
@@ -1946,9 +1992,10 @@
     },
     drawerAbout: function(){
       return `
-      <div style="display:flex;align-items:center;gap:12px;background:var(--ui-subtle);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:16px;">
-        <div style="width:44px;height:44px;background:var(--text);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg viewBox="0 0 18 20" width="22" height="22" fill="currentColor" style="color:var(--bg-primary);">
+      <!-- WA-style header -->
+      <div style="text-align:center;padding:4px 0 18px;">
+        <div style="width:60px;height:60px;background:#5a6ff6;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 6px 20px rgba(90,111,246,0.35);">
+          <svg viewBox="0 0 18 20" width="30" height="30" fill="#fff">
             <rect x="0" y="0" width="3" height="2"/><rect x="15" y="0" width="3" height="2"/>
             <rect x="3" y="2" width="12" height="2"/>
             <rect x="0" y="4" width="3" height="7"/><rect x="15" y="4" width="3" height="7"/>
@@ -1960,73 +2007,70 @@
             <rect x="8" y="16" width="2" height="1"/>
           </svg>
         </div>
-        <div>
-          <div style="font-size:15px;font-weight:800;letter-spacing:0.06em;color:var(--text);font-family:'Barlow Condensed','DM Sans',sans-serif;">JARVIS AI</div>
-          <div style="font-size:9px;color:var(--text-secondary);letter-spacing:1.2px;margin-top:2px;">VERSION 1.0 · OPEN SOURCE</div>
-        </div>
+        <div style="font-size:17px;font-weight:800;letter-spacing:0.06em;color:var(--text);font-family:'Barlow Condensed','DM Sans',sans-serif;">JARVIS AI</div>
+        <div style="font-size:10px;color:#5a6ff6;font-weight:600;letter-spacing:1px;margin-top:2px;">VERSION 1.0 · OPEN SOURCE</div>
       </div>
 
       <p style="font-size:10px;color:var(--text-secondary);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">How It Works</p>
-      <div style="background:var(--ui-subtle);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px;display:flex;flex-direction:column;gap:8px;">
-        <div style="display:flex;align-items:flex-start;gap:9px;">
-          <div style="width:24px;height:24px;background:var(--surface2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-          <div><div style="font-size:11px;font-weight:700;color:var(--text);">Smart Chat</div><div style="font-size:10.5px;color:var(--text-secondary);line-height:1.5;">Groq LLaMA — instant, context-aware replies.</div></div>
+      <div style="background:var(--ui-subtle);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;padding:11px 13px;border-bottom:1px solid var(--border);">
+          <div style="width:32px;height:32px;background:#5a6ff6;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:11px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--text);">Smart Chat</div><div style="font-size:10.5px;color:var(--text-secondary);line-height:1.4;">Groq LLaMA — instant context-aware replies.</div></div>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.35;flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
-        <div style="display:flex;align-items:flex-start;gap:9px;">
-          <div style="width:24px;height:24px;background:var(--surface2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
-          <div><div style="font-size:11px;font-weight:700;color:var(--text);">Image Generation</div><div style="font-size:10.5px;color:var(--text-secondary);line-height:1.5;">FLUX.1-schnell via Hugging Face — just ask.</div></div>
+        <div style="display:flex;align-items:center;padding:11px 13px;border-bottom:1px solid var(--border);">
+          <div style="width:32px;height:32px;background:#7c5cbf;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:11px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--text);">Image Generation</div><div style="font-size:10.5px;color:var(--text-secondary);line-height:1.4;">FLUX.1-schnell via Hugging Face.</div></div>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.35;flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
-        <div style="display:flex;align-items:flex-start;gap:9px;">
-          <div style="width:24px;height:24px;background:var(--surface2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <div><div style="font-size:11px;font-weight:700;color:var(--text);">Built Secure</div><div style="font-size:10.5px;color:var(--text-secondary);line-height:1.5;">Custom auth, rate limits & content filtering.</div></div>
+        <div style="display:flex;align-items:center;padding:11px 13px;">
+          <div style="width:32px;height:32px;background:#10b981;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-right:11px;"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--text);">Secure by Design</div><div style="font-size:10.5px;color:var(--text-secondary);line-height:1.4;">Custom auth, rate limits & content filters.</div></div>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.35;flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
 
       <p style="font-size:10px;color:var(--text-secondary);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Development</p>
-      <div style="background:var(--ui-subtle);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:14px;">
-        <p style="font-size:11.5px;color:var(--text-secondary);line-height:1.6;margin-bottom:10px;">Fully <strong style="color:var(--text);">vibe-coded</strong> with AI agents. Open source, built by one developer.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;">
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Claude</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Gemini</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">DeepSeek</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Manus AI</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">ChatGPT</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">GitHub</span>
-          <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Acode</span>
+      <div style="background:var(--ui-subtle);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+        <div style="padding:11px 13px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text-secondary);line-height:1.6;">Fully <strong style="color:var(--text);">vibe-coded</strong> · open source · built by one developer with AI agents.</div>
+        <div style="padding:10px 13px;border-bottom:1px solid var(--border);">
+          <div style="font-size:10px;color:var(--text-secondary);margin-bottom:6px;letter-spacing:0.5px;">AI AGENTS · PLATFORMS</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;">
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(90,111,246,0.12);border:1px solid rgba(90,111,246,0.25);color:#5a6ff6;font-weight:600;">Claude</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Gemini</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">DeepSeek</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Manus AI</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">ChatGPT</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">GitHub</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);color:var(--text);">Acode</span>
+          </div>
         </div>
-        <a href="https://github.com/heyitsaadin/jarvis-ai" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:7px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:9px;text-decoration:none;color:var(--text);font-size:11px;font-weight:600;">
-          <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          Source on GitHub
-          <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-left:auto;opacity:0.35;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <a href="https://github.com/heyitsaadin/jarvis-ai" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:11px 13px;text-decoration:none;color:var(--text);">
+          <div style="width:32px;height:32px;background:#1a1a2e;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-right:11px;flex-shrink:0;border:1px solid var(--border);"><svg viewBox="0 0 24 24" width="15" height="15" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></div>
+          <div style="flex:1;"><div style="font-size:12px;font-weight:700;color:var(--text);">Source on GitHub</div><div style="font-size:10px;color:#5a6ff6;">heyitsaadin/jarvis-ai</div></div>
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.35;"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
       </div>
 
       <p style="font-size:10px;color:var(--text-secondary);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Developer</p>
-      <div style="background:var(--ui-subtle);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:6px;">
-        <div style="padding:12px;">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
-            <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#f5e3b0,#e0a878);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;color:#1a1a1a;flex-shrink:0;font-family:'Barlow Condensed','DM Sans',sans-serif;">A</div>
-            <div>
-              <div style="font-size:13px;font-weight:800;color:var(--text);">Aadin Kc</div>
-              <div style="font-size:10px;color:var(--text-secondary);">Kerala, India · AI Engineering</div>
-            </div>
-          </div>
-          <p style="font-size:11px;color:var(--text-secondary);line-height:1.65;margin-bottom:10px;">+2 student at PRM HSS Kollavalloor. Self-taught developer building real projects — not tutorials. Python, Flask, HTML/CSS, and a clear goal in AI engineering.</p>
-          <div style="display:flex;gap:5px;flex-wrap:wrap;">
-            <a href="https://github.com/heyitsaadin" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:4px;padding:5px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;text-decoration:none;color:var(--text);font-size:10.5px;font-weight:600;">
-              <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-              GitHub
-            </a>
-            <a href="https://www.linkedin.com/in/aadin-kc-128bb3371" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;gap:4px;padding:5px 9px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;text-decoration:none;color:var(--text);font-size:10.5px;font-weight:600;">
-              <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-              LinkedIn
-            </a>
-          </div>
+      <div style="background:var(--ui-subtle);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px;">
+        <div style="display:flex;align-items:center;padding:12px 13px;border-bottom:1px solid var(--border);">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#5a6ff6,#7c5cbf);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#fff;flex-shrink:0;margin-right:12px;font-family:'Barlow Condensed','DM Sans',sans-serif;">A</div>
+          <div><div style="font-size:13px;font-weight:800;color:var(--text);">Aadin Kc</div><div style="font-size:10px;color:var(--text-secondary);">Kerala · AI Engineering</div></div>
         </div>
-        <div style="border-top:1px solid var(--border);padding:9px 12px;background:var(--surface2);">
-          <p style="font-size:10px;color:var(--text-secondary);line-height:1.5;text-align:center;font-style:italic;">"AI isn't just technology to me. It's the closest thing to magic that actually makes sense."</p>
-        </div>
-      </div>`;
+        <div style="padding:10px 13px;font-size:11px;color:var(--text-secondary);line-height:1.65;border-bottom:1px solid var(--border);">+2 student at PRM HSS Kollavalloor. Self-taught — HTML, CSS, Python, C++, Flask. Builds and ships real projects, not tutorials.</div>
+        <a href="https://github.com/heyitsaadin" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:10px 13px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--text);">
+          <div style="width:28px;height:28px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0;"><svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg></div>
+          <span style="font-size:11.5px;font-weight:600;flex:1;">GitHub</span>
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.35;"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/aadin-kc-128bb3371" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;padding:10px 13px;text-decoration:none;color:var(--text);">
+          <div style="width:28px;height:28px;background:#0a66c2;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-right:10px;flex-shrink:0;"><svg viewBox="0 0 24 24" width="13" height="13" fill="white"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></div>
+          <span style="font-size:11.5px;font-weight:600;flex:1;">LinkedIn</span>
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="opacity:0.35;"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+      <p style="font-size:10px;color:var(--text-secondary);text-align:center;font-style:italic;line-height:1.6;padding:0 4px 6px;">"AI isn't just technology to me. It's the closest thing to magic that actually makes sense." <span style="color:#5a6ff6;font-weight:600;">— Aadin</span></p>`;
     },
     drawerViewChats: function(){
       loadDsChats();
