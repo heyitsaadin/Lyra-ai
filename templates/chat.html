@@ -1053,6 +1053,65 @@
         body.input-focused .dock-wrapper::before {
             opacity: 0;
         }
+
+        /* Gemini-style empty state */
+        .empty-state {
+            position: fixed;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            text-align: center;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5;
+            pointer-events: none;
+        }
+        .empty-state.hidden {
+            opacity: 0;
+            transform: translate(-50%, -45%);
+        }
+        .gemini-star {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #4285f4, #9b72cb, #d96570, #f4af5f);
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            /* Simplified star shape with a gradient */
+            mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z'/%3E%3C/svg%3E") no-repeat center;
+        }
+        .empty-greeting {
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        
+        /* Bottom glow */
+        .bottom-glow {
+            position: fixed;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            height: 250px;
+            background: radial-gradient(circle at center, rgba(66, 133, 244, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+            transition: opacity 0.8s ease;
+        }
+        [data-theme="dark"] .bottom-glow {
+            background: radial-gradient(circle at center, rgba(66, 133, 244, 0.2) 0%, transparent 70%);
+        }
+        body.input-focused .bottom-glow {
+            opacity: 0;
+        }
+
         [data-theme="dark"] .input-dock:focus-within {
             background: rgba(255,255,255,0.07);
         }
@@ -1662,6 +1721,12 @@
 
     <main class="message-stream" id="messageStream" {% if project_info %}style="padding-top:109px;"{% endif %}></main>
 
+    <div class="empty-state" id="emptyState">
+        <div class="gemini-star"></div>
+        <div class="empty-greeting">Ask away, {{ username }}!</div>
+    </div>
+    <div class="bottom-glow"></div>
+
     <!-- Tray backdrop — body-level so z-index works -->
     <div class="tray-backdrop" id="trayBackdrop"></div>
     <!-- Tools tray — body-level -->
@@ -2106,12 +2171,22 @@
     // ── Populate chat ──
     const stream   = document.getElementById('messageStream');
     const typingEl = makeTyping();
+    const emptyState = document.getElementById('emptyState');
+
+    function updateEmptyState() {
+        if (messages.length > 0) {
+            emptyState.classList.add('hidden');
+        } else {
+            emptyState.classList.remove('hidden');
+        }
+    }
 
     messages.forEach((msg, idx) => {
         const animate = isNewReply && idx === messages.length - 1 && msg.sender !== 'You';
         stream.appendChild(makeBubble(msg, animate, stream));
     });
     stream.appendChild(typingEl);
+    updateEmptyState();
     requestAnimationFrame(() => { stream.scrollTop = stream.scrollHeight; });
 
     // ── AJAX send ──
@@ -2134,11 +2209,15 @@
 
     chatInput.addEventListener('focus', () => {
         document.body.classList.add('input-focused');
+        emptyState.classList.add('hidden');
     });
 
     chatInput.addEventListener('blur', () => {
         if (chatInput.value.trim().length === 0) {
             document.body.classList.remove('input-focused');
+            if (messages.length === 0) {
+                emptyState.classList.remove('hidden');
+            }
         }
     });
 

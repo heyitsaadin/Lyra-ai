@@ -695,7 +695,7 @@ def check_ban():
             session["is_owner"]            = False
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
-            session["messages"] = [{"sender": "Jarvis", "text": get_greeting(username)}]
+            session["messages"] = [] # Trigger Gemini-style empty state
 
     user = session.get("user")
     if user and is_banned(user, "user"):
@@ -1641,7 +1641,7 @@ def login():
             session["is_owner"]            = False
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
-            session["messages"] = [{"sender": "Jarvis", "text": get_greeting(username)}]
+            session["messages"] = [] # Trigger Gemini-style empty state
             return redirect("/landing")
     if request.method == "POST":
         username = request.form["username"]
@@ -1659,7 +1659,7 @@ def login():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
+            session["messages"] = [] # Trigger Gemini-style empty state
             auth_token = create_auth_token(username)
             resp = redirect("/landing")
             resp.set_cookie("jarvis_auth_token", auth_token,
@@ -1698,7 +1698,7 @@ def signup():
             session["awaiting_owner_code"] = False
             session["chat_key"]            = secrets.token_hex(8)
             greeting = get_greeting(username)
-            session["messages"] = [{"sender": "Jarvis", "text": greeting}]
+            session["messages"] = [] # Trigger Gemini-style empty state
             auth_token = create_auth_token(username)
             resp = redirect("/landing")
             resp.set_cookie("jarvis_auth_token", auth_token,
@@ -2094,7 +2094,7 @@ def new_chat():
     _flush_chat_session()
     username = session["user"]
     greeting = get_greeting(username)
-    session["messages"] = [{"sender": "Jarvis", "text": greeting}]
+    session["messages"] = [] # Trigger Gemini-style empty state
     session["chat_key"] = secrets.token_hex(8)
     session.pop("active_project_id", None)
     session.modified = True
@@ -2265,7 +2265,7 @@ def project_chat_enter(project_id):
     heartbeat(session["user"])
     username = session["user"]
     greeting = get_greeting(username)
-    session["messages"] = [{"sender": "Jarvis", "text": greeting}]
+    session["messages"] = [] # Trigger Gemini-style empty state
     session["chat_key"] = secrets.token_hex(8)
     session["active_project_id"] = project_id
     session.modified = True
@@ -2291,7 +2291,7 @@ def project_chat_resume(project_id, session_key):
         session["messages"] = _json_mod.loads(row["messages"])
         session["chat_key"] = session_key
     else:
-        session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
+        session["messages"] = [] # Trigger Gemini-style empty state
         session["chat_key"] = secrets.token_hex(8)
     session["active_project_id"] = project_id
     session.modified = True
@@ -2408,7 +2408,7 @@ def account_delete_chat(session_key):
         return jsonify({"ok": False}), 401
     delete_chat_session(session["user"], session_key)
     if session.get("chat_key") == session_key:
-        session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
+        session["messages"] = [] # Trigger Gemini-style empty state
         session["chat_key"] = secrets.token_hex(8)
         session.modified = True
     return jsonify({"ok": True}), 200
@@ -2439,7 +2439,7 @@ def account_delete_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
+    session["messages"] = [] # Trigger Gemini-style empty state
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200
@@ -2528,7 +2528,7 @@ def clear_all_chats():
     if "user" not in session:
         return jsonify({"ok": False}), 401
     delete_all_chat_sessions(session["user"])
-    session["messages"] = [{"sender": "Jarvis", "text": get_greeting(session["user"])}]
+    session["messages"] = [] # Trigger Gemini-style empty state
     session["chat_key"] = secrets.token_hex(8)
     session.modified = True
     return jsonify({"ok": True}), 200
