@@ -83,6 +83,14 @@
             transition: background-color 0.25s;
         }
 
+        /* When empty state is showing, body goes dark to let gradient shine */
+        body:not(.has-messages) {
+            background-color: #050812 !important;
+        }
+        [data-theme="light"] body:not(.has-messages) {
+            background-color: #f0f4ff !important;
+        }
+
         /* ════════════════════════════════
            MESSAGE BUBBLES (old logic)
         ════════════════════════════════ */
@@ -909,8 +917,11 @@
         .dock-wrapper {
             position: absolute; bottom: 0; left: 0; right: 0;
             padding: 16px 16px 20px;
-            background: linear-gradient(to top, var(--bg-primary) 80%, transparent);
+            background: linear-gradient(to top, rgba(5,8,18,0.96) 60%, rgba(5,8,18,0) 100%);
             display: flex; flex-direction: column; gap: 8px; z-index: 20;
+        }
+        [data-theme="light"] .dock-wrapper {
+            background: linear-gradient(to top, rgba(240,244,255,0.97) 60%, rgba(240,244,255,0) 100%);
         }
 
         /* ── Tray backdrop ── */
@@ -1082,6 +1093,9 @@
             font-family: inherit;
         }
         .input-row textarea::placeholder { color: var(--text-secondary); }
+        /* In empty state, placeholder is white-ish on dark bg */
+        body:not(.has-messages) .input-row textarea { color: #f0f0f0; }
+        body:not(.has-messages) .input-row textarea::placeholder { color: rgba(255,255,255,0.45); }
 
         /* Send button — solid accent with glow */
         .submit-btn {
@@ -1101,36 +1115,112 @@
         .dock-footer { text-align: center; font-size: 9px; color: var(--text-secondary); letter-spacing: 1.5px; padding-top: 2px; }
         .dock-footer span { color: var(--text-primary); font-weight: 700; }
 
-        /* ════ GEMINI-STYLE BOTTOM GRADIENT ════ */
+        /* ════ VIBRANT ANIMATED GRADIENT BACKGROUND ════ */
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            25%  { background-position: 100% 0%; }
+            50%  { background-position: 100% 100%; }
+            75%  { background-position: 0% 100%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes auroraFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+            33%       { transform: translate(30px, -20px) scale(1.08); opacity: 1; }
+            66%       { transform: translate(-20px, 15px) scale(0.95); opacity: 0.6; }
+        }
+        @keyframes auroraFloat2 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+            33%       { transform: translate(-40px, 25px) scale(1.1); opacity: 0.9; }
+            66%       { transform: translate(25px, -30px) scale(0.92); opacity: 0.4; }
+        }
+        @keyframes auroraFloat3 {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+            50%       { transform: translate(20px, 30px) scale(1.05); opacity: 1; }
+        }
+
         .bottom-glow {
             position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 55vh;
+            inset: 0;
             pointer-events: none;
             z-index: 5;
-            background: linear-gradient(to top,
-                #0a1628 0%,
-                #0d1f3c 18%,
-                #0f2444 32%,
-                rgba(10, 22, 48, 0.55) 60%,
-                transparent 100%
-            );
-            opacity: 1;
+            overflow: hidden;
+            background: #050812;
             transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        [data-theme="light"] .bottom-glow {
-            background: linear-gradient(to top,
-                rgba(235, 240, 255, 1) 0%,
-                rgba(235, 240, 255, 0.75) 35%,
-                transparent 100%
-            );
+        .bottom-glow::before,
+        .bottom-glow::after,
+        .bottom-glow .aurora1,
+        .bottom-glow .aurora2,
+        .bottom-glow .aurora3 {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            mix-blend-mode: screen;
         }
+        .bottom-glow::before {
+            width: 60vw; height: 60vw;
+            background: radial-gradient(circle, rgba(99,27,255,0.75) 0%, rgba(67,6,196,0.4) 50%, transparent 70%);
+            bottom: -10%; left: -10%;
+            animation: auroraFloat 8s ease-in-out infinite;
+        }
+        .bottom-glow::after {
+            width: 55vw; height: 55vw;
+            background: radial-gradient(circle, rgba(0,162,255,0.65) 0%, rgba(0,80,200,0.3) 50%, transparent 70%);
+            bottom: -5%; right: -15%;
+            animation: auroraFloat2 10s ease-in-out infinite;
+        }
+        .aurora1, .aurora2, .aurora3 { position: absolute; border-radius: 50%; filter: blur(70px); mix-blend-mode: screen; }
+        .aurora1 {
+            width: 45vw; height: 45vw;
+            background: radial-gradient(circle, rgba(255,0,200,0.55) 0%, rgba(180,0,120,0.25) 50%, transparent 70%);
+            bottom: 20%; left: 30%;
+            animation: auroraFloat3 7s ease-in-out infinite;
+        }
+        .aurora2 {
+            width: 40vw; height: 40vw;
+            background: radial-gradient(circle, rgba(0,255,180,0.4) 0%, rgba(0,160,100,0.15) 50%, transparent 70%);
+            top: 10%; right: 10%;
+            animation: auroraFloat 12s ease-in-out infinite reverse;
+        }
+        .aurora3 {
+            width: 35vw; height: 35vw;
+            background: radial-gradient(circle, rgba(255,160,0,0.35) 0%, rgba(200,80,0,0.12) 50%, transparent 70%);
+            top: 30%; left: 5%;
+            animation: auroraFloat2 9s ease-in-out infinite reverse;
+        }
+
+        /* Dark overlay so text remains readable when chat has messages */
         .bottom-glow.faded {
             opacity: 0;
             pointer-events: none;
         }
 
+        /* When there ARE messages, hide the full-screen gradient and just show subtle bottom fade */
+        body.has-messages .bottom-glow {
+            opacity: 0 !important;
+        }
+
+        [data-theme="light"] .bottom-glow {
+            background: #f0f4ff;
+        }
+        [data-theme="light"] .bottom-glow::before {
+            background: radial-gradient(circle, rgba(120,60,255,0.4) 0%, transparent 70%);
+        }
+        [data-theme="light"] .bottom-glow::after {
+            background: radial-gradient(circle, rgba(0,120,255,0.35) 0%, transparent 70%);
+        }
+
         /* ════ EMPTY / WELCOME STATE ════ */
+        @keyframes greetFadeUp {
+            from { opacity: 0; transform: translate(-50%, calc(-50% + 22px)) scale(0.96); }
+            to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        @keyframes greetGlow {
+            0%, 100% { text-shadow: 0 0 40px rgba(120,60,255,0.5), 0 0 80px rgba(0,162,255,0.25); }
+            50%       { text-shadow: 0 0 60px rgba(180,0,255,0.7), 0 0 120px rgba(0,162,255,0.4), 0 2px 0 rgba(255,255,255,0.1); }
+        }
+
         .chat-empty-state {
             position: fixed;
             top: 50%; left: 50%;
@@ -1138,23 +1228,42 @@
             display: flex; flex-direction: column;
             align-items: center;
             pointer-events: none;
-            z-index: 6;
+            z-index: 8;
             width: 100%;
-            padding: 0 32px;
+            padding: 0 28px;
+            /* shift up to leave room for dock */
+            margin-top: -60px;
             opacity: 1;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
         .chat-empty-state.hidden {
             opacity: 0;
         }
         .chat-empty-state h2 {
-            font-size: 28px;
-            font-weight: 300;
-            letter-spacing: -0.2px;
-            color: var(--text-primary);
+            font-size: clamp(26px, 7vw, 38px);
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #fff;
             text-align: center;
-            line-height: 1.2;
+            line-height: 1.25;
             margin: 0;
+            animation: greetFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both, greetGlow 4s ease-in-out infinite 0.65s;
+        }
+        [data-theme="light"] .chat-empty-state h2 {
+            color: #1a0a4a;
+            animation: greetFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+            text-shadow: none;
+        }
+        .chat-empty-state .greet-sub {
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(255,255,255,0.45);
+            margin-top: 10px;
+            letter-spacing: 0.2px;
+            animation: greetFadeUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+        }
+        [data-theme="light"] .chat-empty-state .greet-sub {
+            color: rgba(60,30,120,0.5);
         }
 
         /* ════════════════════════════════
@@ -1753,12 +1862,17 @@
             <button class="img-preview-remove" id="imgRemove" title="Remove">✕</button>
         </div>
 
-        <!-- Gemini-style bottom gradient glow -->
-        <div class="bottom-glow" id="bottomGlow"></div>
+        <!-- Vibrant animated gradient background -->
+        <div class="bottom-glow" id="bottomGlow">
+            <div class="aurora1"></div>
+            <div class="aurora2"></div>
+            <div class="aurora3"></div>
+        </div>
 
-        <!-- Empty / welcome state (Gemini style) -->
+        <!-- Empty / welcome state -->
         <div class="chat-empty-state" id="chatEmptyState">
             <h2 id="emptyStateText">Ask away!</h2>
+            <p class="greet-sub" id="emptyStateSub">Your personal AI, ready for anything.</p>
         </div>
 
         <!-- Input dock -->
@@ -2164,14 +2278,38 @@
     const emptyState   = document.getElementById('chatEmptyState');
     const bottomGlow   = document.getElementById('bottomGlow');
     const emptyText    = document.getElementById('emptyStateText');
+    const emptySubEl   = document.getElementById('emptyStateSub');
 
-    // Personalise the empty state greeting with the username from messages
+    // Personalise the empty state greeting with random animated greetings
     (function() {
-        const uname = (messages[0] && messages[0].sender !== 'You') ? null : null;
-        // Pull username from page if available
         const drawerName = document.querySelector('.drawer-uname');
-        if (drawerName) emptyText.textContent = 'Ask away, ' + drawerName.textContent.trim() + '!';
-        else emptyText.textContent = 'Ask away!';
+        const name = drawerName ? drawerName.textContent.trim() : null;
+        const n = name || 'you';
+
+        const greetings = [
+            { main: `Good to see you, ${n}`, sub: `Brain's warmed up — what do you need?` },
+            { main: `Hey ${n}! Ready when you are`, sub: `Ask me anything, I've got you.` },
+            { main: `What's on your mind, ${n}?`, sub: `Let's figure it out together.` },
+            { main: `Welcome back, ${n}`, sub: `What shall we tackle today?` },
+            { main: `Hi ${n}! Let's do something great`, sub: `Ask away — no question too big or small.` },
+            { main: `${n}, what can I help with?`, sub: `I'm all ears and fully loaded.` },
+            { main: `Morning, ${n}!`, sub: `Coffee optional, answers guaranteed.` },
+            { main: `Hello ${n} ✦`, sub: `Your AI is online and ready.` },
+        ];
+
+        // Pick a random greeting each time, but also cycle (avoids same one twice in a row)
+        const lastIdx = parseInt(sessionStorage.getItem('j_last_greet') || '-1');
+        let idx;
+        do { idx = Math.floor(Math.random() * greetings.length); } while (idx === lastIdx && greetings.length > 1);
+        sessionStorage.setItem('j_last_greet', idx);
+
+        const g = greetings[idx];
+        emptyText.textContent = g.main;
+        if (emptySubEl) emptySubEl.textContent = g.sub;
+
+        // Re-trigger animation by replacing the element
+        emptyText.style.animation = 'none';
+        requestAnimationFrame(() => { emptyText.style.animation = ''; });
     })();
 
     function syncEmptyState() {
@@ -2180,8 +2318,10 @@
         const isEmpty = realMsgs.length === 0;
         if (isEmpty) {
             emptyState.classList.remove('hidden');
+            document.body.classList.remove('has-messages');
         } else {
             emptyState.classList.add('hidden');
+            document.body.classList.add('has-messages');
         }
     }
     syncEmptyState();
@@ -2191,9 +2331,10 @@
     const inputDock = document.getElementById('inputDock');
     const submitBtn = document.getElementById('submitBtn');
 
-    // Fade gradient on focus, restore on blur (if still empty)
+    // Subtle dim on focus (don't fully hide when empty)
     chatInput.addEventListener('focus', function() {
-        bottomGlow.classList.add('faded');
+        const realMsgs = messages.filter(m => m.sender === 'You');
+        if (realMsgs.length > 0) bottomGlow.classList.add('faded');
     });
     chatInput.addEventListener('blur', function() {
         const realMsgs = messages.filter(m => m.sender === 'You');
