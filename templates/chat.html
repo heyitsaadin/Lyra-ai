@@ -2318,7 +2318,11 @@
     }
 
     function hasRealMessages() {
-        return messages.some(m => m.sender === 'You');
+        // Hide welcome if user has sent a message OR if there are already multiple messages
+        // (backend may pre-populate a Jarvis greeting — don't overlay that)
+        if (messages.some(m => m.sender === 'You')) return true;
+        if (messages.length > 1) return true;
+        return false;
     }
 
     function showWelcome() {
