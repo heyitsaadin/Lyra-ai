@@ -1235,7 +1235,7 @@
             align-items: center; justify-content: center;
             padding: 0 32px 140px; /* bottom padding clears dock */
             z-index: 10;
-            pointer-events: none;
+            pointer-events: none; /* default: passthrough */
             opacity: 0;
             transform: scale(0.97);
             transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1),
@@ -1243,6 +1243,8 @@
         }
         body.jarvis-welcome .jarvis-greeting {
             opacity: 1; transform: scale(1);
+            pointer-events: auto; /* active: tappable to dismiss */
+            cursor: pointer;
         }
         .jarvis-greeting h2 {
             font-size: clamp(24px, 7vw, 36px);
@@ -2317,16 +2319,7 @@
         return raw.charAt(0).toUpperCase() + raw.slice(1);
     }
 
-    function hasRealMessages() {
-        // Hide welcome if user has sent a message OR if there are already multiple messages
-        // (backend may pre-populate a Jarvis greeting — don't overlay that)
-        if (messages.some(m => m.sender === 'You')) return true;
-        if (messages.length > 1) return true;
-        return false;
-    }
-
     function showWelcome() {
-        if (hasRealMessages()) { hideWelcome(false); return; }
         document.body.classList.add('jarvis-welcome');
 
         const name = getDisplayName();
@@ -2383,6 +2376,15 @@
 
     // Initial render
     showWelcome();
+
+    // Tap anywhere on the greeting to dismiss it
+    document.getElementById('jarvisGreeting').addEventListener('click', function() {
+        if (document.body.classList.contains('jarvis-welcome')) hideWelcome(true);
+    });
+    // Also dismiss on any keypress / touch on the input
+    document.getElementById('chatInput').addEventListener('focus', function() {
+        if (document.body.classList.contains('jarvis-welcome')) hideWelcome(true);
+    });
 
     // ── AJAX send ──
     const chatInput = document.getElementById('chatInput');
