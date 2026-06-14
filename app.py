@@ -2240,9 +2240,17 @@ def projects_create():
     name = data.get("name", "").strip()
     description = data.get("description", "").strip()
     color = data.get("color", "#6366f1").strip()
+    project_type = data.get("type", "general").strip()
     if not name:
         return _json_mod.dumps({"error": "name_required"}), 400, {"Content-Type": "application/json"}
     project = create_project(session["user"], name[:80], description[:300], color)
+    if project_type and project_type != "general":
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("UPDATE projects SET type=%s WHERE id=%s", (project_type, project["id"]))
+        conn.commit()
+        cur.close()
+        return_db(conn)
     return _json_mod.dumps({"project": dict(project)}), 200, {"Content-Type": "application/json"}
 
 @app.route("/projects/<int:project_id>/delete", methods=["POST"])
@@ -2269,6 +2277,15 @@ def project_chat_enter(project_id):
     """Start or resume a chat scoped to a project."""
     if "user" not in session:
         return redirect("/")
+    # Check if this is a website creation project
+    conn = get_db()
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute("SELECT type FROM projects WHERE id=%s AND username=%s", (project_id, session["user"]))
+    row = cur.fetchone()
+    cur.close()
+    return_db(conn)
+    if row and row.get("type") == "website_creation":
+        return redirect(f"/project/website/{project_id}")
     _flush_chat_session()
     heartbeat(session["user"])
     username = session["user"]
@@ -3066,6 +3083,9 @@ def service_worker():
 def google_verify(rest):
     return send_from_directory('.', 'googlea35edb5a70c' + rest)
 
+
+from website_bp import website_bp
+app.register_blueprint(website_bp)
 
 init_db()
 init_db_pool()

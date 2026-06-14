@@ -1694,20 +1694,62 @@
 <!-- ════════ CREATE PROJECT MODAL ════════ -->
 <div class="project-modal-overlay" id="projectModalOverlay" onclick="handleModalOverlayClick(event)">
   <div class="project-modal">
-    <div class="project-modal-title">New Project</div>
-    <div style="margin-bottom:14px;">
-      <label for="projectNameInput">Name</label>
-      <input type="text" id="projectNameInput" placeholder="e.g. App redesign, Research notes…" maxlength="80" autocomplete="off">
-    </div>
-    <div style="margin-bottom:14px;">
-      <label for="projectDescInput">Description <span style="opacity:0.5;">(optional)</span></label>
-      <textarea id="projectDescInput" rows="2" placeholder="What's this project about?" maxlength="300"></textarea>
+
+    <!-- STEP 1: Type picker -->
+    <div id="projTypeStep">
+      <div class="project-modal-title">What are you building?</div>
+      <div id="projTypeTile" onclick="selectProjectType('website_creation')" style="
+        display:flex;align-items:center;gap:14px;
+        padding:14px 15px;border-radius:14px;
+        border:1px solid var(--border-bright);
+        background:var(--ui-subtle);cursor:pointer;
+        transition:border-color 0.15s,background 0.15s;
+      ">
+        <div style="
+          width:44px;height:44px;border-radius:13px;flex-shrink:0;
+          background:linear-gradient(135deg,#7c6dfa 0%,#a78bfa 100%);
+          display:flex;align-items:center;justify-content:center;font-size:22px;
+        ">🌐</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);">Website Creation</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;line-height:1.4;">Build a website with AI — files, preview & history</div>
+        </div>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-left:auto;opacity:0.5;"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="project-modal-actions" style="margin-top:14px;">
+        <button class="btn-cancel" onclick="closeProjectModal()">Cancel</button>
+      </div>
     </div>
 
-    <div class="project-modal-actions">
-      <button class="btn-cancel" onclick="closeProjectModal()">Cancel</button>
-      <button class="btn-create" onclick="submitCreateProject()">Create</button>
+    <!-- STEP 2: Name + form -->
+    <div id="projFormStep" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <button onclick="backToTypeStep()" style="
+          width:30px;height:30px;border-radius:50%;border:1px solid var(--border);
+          background:var(--ui-subtle);cursor:pointer;display:flex;
+          align-items:center;justify-content:center;flex-shrink:0;
+        ">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--text)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,#7c6dfa,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:13px;">🌐</div>
+          <span class="project-modal-title" style="margin-bottom:0;font-size:14px;" id="projFormStepTitle">Website Creation</span>
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="projectNameInput">Project Name</label>
+        <input type="text" id="projectNameInput" placeholder="e.g. My Portfolio, Café Landing…" maxlength="80" autocomplete="off">
+      </div>
+      <div style="margin-bottom:14px;">
+        <label for="projectDescInput">Description <span style="opacity:0.5;">(optional)</span></label>
+        <textarea id="projectDescInput" rows="2" placeholder="What's this website about?" maxlength="300"></textarea>
+      </div>
+      <div class="project-modal-actions">
+        <button class="btn-cancel" onclick="closeProjectModal()">Cancel</button>
+        <button class="btn-create" onclick="submitCreateProject()">Create</button>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -2406,17 +2448,40 @@
     renderSwatches();
     document.getElementById('projectNameInput').value = '';
     document.getElementById('projectDescInput').value = '';
+    // Always start on type picker step
+    document.getElementById('projTypeStep').style.display = 'block';
+    document.getElementById('projFormStep').style.display = 'none';
+    selectedProjectType = 'general';
     document.getElementById('projectModalOverlay').classList.add('open');
-    setTimeout(() => document.getElementById('projectNameInput').focus(), 120);
   };
   window.closeProjectModal = function() {
     document.getElementById('projectModalOverlay').classList.remove('open');
+    // Reset to type step for next open
+    setTimeout(() => {
+      document.getElementById('projTypeStep').style.display = 'block';
+      document.getElementById('projFormStep').style.display = 'none';
+      selectedProjectType = 'general';
+    }, 300);
   };
   window.handleModalOverlayClick = function(e) {
     if (e.target === document.getElementById('projectModalOverlay')) closeProjectModal();
   };
 
   // ── Create project ──
+
+  window.selectProjectType = function(type) {
+    selectedProjectType = type;
+    document.getElementById('projTypeStep').style.display = 'none';
+    document.getElementById('projFormStep').style.display = 'block';
+    setTimeout(() => document.getElementById('projectNameInput').focus(), 80);
+  };
+
+  window.backToTypeStep = function() {
+    document.getElementById('projFormStep').style.display = 'none';
+    document.getElementById('projTypeStep').style.display = 'block';
+    selectedProjectType = 'general';
+  };
+
   window.submitCreateProject = async function() {
     const name = document.getElementById('projectNameInput').value.trim();
     const description = document.getElementById('projectDescInput').value.trim();
@@ -2431,14 +2496,13 @@
     try {
       const r = await fetch('/projects/create', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ name, description, color: selectedColor })
+        body: JSON.stringify({ name, description, color: selectedColor, type: selectedProjectType })
       });
       const data = await r.json();
       if (data.project) {
         projectsData.unshift(data.project);
         renderProjects();
         closeProjectModal();
-        // Navigate into the new project's chat
         window.location.href = '/project_chat/' + data.project.id;
       }
     } catch(e) {}

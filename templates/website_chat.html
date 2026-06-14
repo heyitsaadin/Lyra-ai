@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+(function(){
+  const t = localStorage.getItem('jarvis-dark');
+  document.documentElement.setAttribute('data-theme', t ? 'dark' : 'light');
+  document.body && document.body.setAttribute('data-theme', t ? 'dark' : 'light');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+<title>{{ project.name }} — Jarvis Builder</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #0a0a0a;
+  --surface:   #111111;
+  --surface2:  #1a1a1a;
+  --border:    rgba(255,255,255,0.08);
+  --border2:   rgba(255,255,255,0.14);
+  --text:      #f0f0f0;
+  --text2:     #888;
+  --accent:    #7c6dfa;
+  --accent2:   #9d91fb;
+  --green:     #22c55e;
+  --red:       #ef4444;
+  --tab-h:     60px;
+  --safe-b:    env(safe-area-inset-bottom, 0px);
+  --safe-t:    env(safe-area-inset-top, 0px);
+}
+[data-theme="light"] {
+  --bg:       #f8f8f7;
+  --surface:  #ffffff;
+  --surface2: #f0f0ee;
+  --border:   rgba(0,0,0,0.08);
+  --border2:  rgba(0,0,0,0.14);
+  --text:     #111110;
+  --text2:    #706f6c;
+}
+
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body {
+  width:100%; height:100dvh;
+  background:var(--bg); color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden; position:fixed;
+}
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+#app {
+  display:flex; flex-direction:column;
+  width:100%; height:100dvh;
+  padding-top:var(--safe-t);
+  padding-bottom:calc(var(--tab-h) + var(--safe-b));
+}
+
+/* ── Top bar ── */
+#topbar {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 16px 10px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#back-btn {
+  width:34px; height:34px; border-radius:10px;
+  border:1px solid var(--border2); background:var(--surface2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0;
+  color:var(--text2);
+}
+#back-btn svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+#project-info { flex:1; min-width:0; }
+#project-name {
+  font-size:15px; font-weight:700; letter-spacing:-0.01em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+#project-sub { font-size:11px; color:var(--text2); margin-top:1px; }
+#dl-btn {
+  width:34px; height:34px; border-radius:10px;
+  border:1px solid var(--border2); background:var(--surface2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; flex-shrink:0; color:var(--text2);
+  text-decoration:none;
+}
+#dl-btn svg { width:15px; height:15px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ── Chat area ── */
+#chat-wrap {
+  flex:1; overflow-y:auto; overflow-x:hidden;
+  padding:16px 16px 8px;
+  scroll-behavior:smooth;
+}
+#chat-wrap::-webkit-scrollbar { display:none; }
+
+/* ── Messages ── */
+.msg-row { margin-bottom:20px; animation:msgIn 0.3s cubic-bezier(0.16,1,0.3,1) both; }
+@keyframes msgIn {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.msg-label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--text2); margin-bottom:5px; }
+.msg-text {
+  font-size:14.5px; line-height:1.65; color:var(--text);
+  word-break:break-word;
+}
+.msg-text p { margin-bottom:4px; }
+.msg-text p:last-child { margin-bottom:0; }
+.msg-text strong { font-weight:700; }
+.msg-text code { background:rgba(124,109,250,0.12); border-radius:4px; padding:1px 5px; font-family:'Courier New',monospace; font-size:12.5px; color:var(--accent2); }
+[data-theme="light"] .msg-text code { background:rgba(124,109,250,0.1); }
+
+.msg-row.user .msg-text {
+  background:var(--surface2); border-radius:14px 14px 4px 14px;
+  padding:10px 13px; display:inline-block; max-width:88%;
+}
+.msg-row.user { display:flex; flex-direction:column; align-items:flex-end; }
+.msg-row.user .msg-label { text-align:right; }
+
+/* ── Typing indicator ── */
+#typing {
+  display:none; margin-bottom:16px;
+  animation:msgIn 0.3s cubic-bezier(0.16,1,0.3,1) both;
+}
+.typing-dots { display:flex; gap:5px; align-items:center; padding:4px 0; }
+.typing-dots span {
+  width:7px; height:7px; border-radius:50%;
+  background:var(--accent); opacity:0.5;
+  animation:dotPulse 1.2s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay:0.2s; }
+.typing-dots span:nth-child(3) { animation-delay:0.4s; }
+@keyframes dotPulse {
+  0%,80%,100% { transform:scale(0.7); opacity:0.4; }
+  40% { transform:scale(1.1); opacity:1; }
+}
+
+/* Files badge on typing */
+#file-update-banner {
+  display:none;
+  background:rgba(34,197,94,0.12); border:1px solid rgba(34,197,94,0.25);
+  border-radius:10px; padding:8px 12px;
+  font-size:12px; color:var(--green);
+  margin-bottom:12px;
+  animation:msgIn 0.3s ease both;
+}
+#file-update-banner.show { display:flex; align-items:center; gap:8px; }
+
+/* Empty state */
+#empty-state {
+  display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:12px;
+  padding:40px 20px; text-align:center;
+  min-height:200px;
+}
+#empty-state .icon {
+  width:52px; height:52px; border-radius:16px;
+  background:linear-gradient(135deg, var(--accent) 0%, #a78bfa 100%);
+  display:flex; align-items:center; justify-content:center;
+  font-size:24px;
+}
+#empty-state h3 { font-size:17px; font-weight:700; }
+#empty-state p { font-size:13px; color:var(--text2); line-height:1.5; max-width:260px; }
+
+/* Suggestion chips */
+.suggestion-chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:4px; }
+.chip {
+  background:var(--surface2); border:1px solid var(--border2);
+  border-radius:20px; padding:7px 13px;
+  font-size:12.5px; color:var(--text2); cursor:pointer;
+  transition:border-color 0.15s, color 0.15s;
+}
+.chip:hover { border-color:var(--accent); color:var(--accent); }
+
+/* ── Input dock ── */
+#input-dock {
+  padding:8px 12px 10px;
+  border-top:1px solid var(--border);
+  background:var(--bg);
+  flex-shrink:0;
+}
+#input-row {
+  display:flex; gap:8px; align-items:flex-end;
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:18px; padding:6px 6px 6px 14px;
+  transition:border-color 0.2s;
+}
+#input-row:focus-within { border-color:var(--accent); }
+#chat-input {
+  flex:1; background:none; border:none; outline:none;
+  font-size:14.5px; color:var(--text); resize:none;
+  line-height:1.5; max-height:120px; min-height:24px;
+  padding:3px 0; font-family:inherit;
+}
+#chat-input::placeholder { color:var(--text2); }
+#send-btn {
+  width:36px; height:36px; border-radius:12px; flex-shrink:0;
+  background:var(--accent); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:opacity 0.15s, transform 0.15s;
+}
+#send-btn:disabled { opacity:0.4; }
+#send-btn:not(:disabled):active { transform:scale(0.92); }
+#send-btn svg { width:16px; height:16px; stroke:#fff; fill:none; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ═══════════════════════════════════════════
+   BOTTOM TAB BAR
+═══════════════════════════════════════════ */
+#tabbar {
+  position:fixed; bottom:0; left:0; right:0;
+  height:calc(var(--tab-h) + var(--safe-b));
+  padding-bottom:var(--safe-b);
+  background:var(--surface);
+  border-top:1px solid var(--border);
+  display:flex; align-items:stretch;
+  z-index:200;
+}
+.tab-btn {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:4px;
+  background:none; border:none; cursor:pointer;
+  color:var(--text2); position:relative;
+  transition:color 0.15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.tab-btn.active { color:var(--accent); }
+.tab-btn svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.tab-label { font-size:10px; font-weight:600; letter-spacing:0.02em; }
+
+/* Active indicator dot */
+.tab-btn.active::after {
+  content:''; position:absolute; top:6px;
+  width:4px; height:4px; border-radius:50%;
+  background:var(--accent);
+}
+
+/* File count badge */
+.tab-badge {
+  position:absolute; top:5px; right:calc(50% - 14px);
+  background:var(--accent); color:#fff;
+  font-size:9px; font-weight:700; line-height:1;
+  padding:2px 5px; border-radius:20px; min-width:16px; text-align:center;
+}
+
+/* ═══════════════════════════════════════════
+   OVERLAY PANELS (Files, Preview, History)
+═══════════════════════════════════════════ */
+.panel-overlay {
+  position:fixed; inset:0; z-index:300;
+  background:rgba(0,0,0,0.55);
+  opacity:0; pointer-events:none;
+  transition:opacity 0.28s ease;
+}
+.panel-overlay.open { opacity:1; pointer-events:all; }
+
+.panel-sheet {
+  position:absolute; bottom:0; left:0; right:0;
+  background:var(--surface);
+  border-radius:20px 20px 0 0;
+  transform:translateY(100%);
+  transition:transform 0.32s cubic-bezier(0.22,1,0.36,1);
+  max-height:88dvh;
+  display:flex; flex-direction:column;
+  padding-bottom:var(--safe-b);
+}
+.panel-overlay.open .panel-sheet {
+  transform:translateY(0);
+}
+
+.panel-handle {
+  width:36px; height:4px; border-radius:2px;
+  background:var(--border2); margin:12px auto 4px;
+  flex-shrink:0;
+}
+.panel-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 16px 12px; flex-shrink:0;
+  border-bottom:1px solid var(--border);
+}
+.panel-title { font-size:15px; font-weight:700; }
+.panel-close {
+  width:30px; height:30px; border-radius:50%;
+  background:var(--surface2); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text2);
+}
+.panel-close svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; }
+.panel-body { flex:1; overflow-y:auto; padding:12px 16px 16px; }
+.panel-body::-webkit-scrollbar { display:none; }
+
+/* ── Files Panel ── */
+.file-list { display:flex; flex-direction:column; gap:6px; }
+.file-item {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 13px; border-radius:12px;
+  background:var(--surface2); border:1px solid var(--border);
+  cursor:pointer; transition:border-color 0.15s;
+}
+.file-item:active { border-color:var(--accent); }
+.file-icon {
+  width:32px; height:32px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; flex-shrink:0;
+}
+.file-icon.html { background:rgba(239,100,68,0.15); }
+.file-icon.css  { background:rgba(59,130,246,0.15); }
+.file-icon.js   { background:rgba(234,179,8,0.15); }
+.file-icon.other{ background:rgba(124,109,250,0.15); }
+.file-name { font-size:14px; font-weight:600; flex:1; }
+.file-time { font-size:11px; color:var(--text2); }
+.file-empty { text-align:center; color:var(--text2); font-size:13.5px; padding:32px 0; line-height:1.6; }
+
+/* File viewer */
+#file-viewer {
+  display:none; flex-direction:column; gap:0;
+  position:absolute; inset:0; background:var(--surface);
+  border-radius:20px 20px 0 0;
+}
+#file-viewer.show { display:flex; }
+#file-viewer-header {
+  display:flex; align-items:center; gap:10px;
+  padding:16px 16px 12px; border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+#file-viewer-back {
+  width:30px; height:30px; border-radius:50%;
+  background:var(--surface2); border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; color:var(--text2);
+}
+#file-viewer-back svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+#file-viewer-name { font-size:14px; font-weight:700; flex:1; }
+#file-copy-btn {
+  padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600;
+  background:var(--accent); color:#fff; border:none; cursor:pointer;
+}
+#file-code {
+  flex:1; overflow:auto; padding:16px;
+  font-family:'Courier New', Courier, monospace;
+  font-size:12px; line-height:1.7;
+  color:#cdd6f4; white-space:pre; background:var(--bg);
+}
+#file-code::-webkit-scrollbar { display:none; }
+
+/* ── Preview Panel ── */
+#preview-frame {
+  width:100%; flex:1; border:none;
+  border-radius:0; background:#fff;
+}
+.preview-empty {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:10px;
+  color:var(--text2); text-align:center; padding:40px;
+}
+.preview-empty svg { width:40px; height:40px; stroke:currentColor; fill:none; stroke-width:1.4; opacity:0.4; }
+#preview-reload {
+  padding:8px 18px; border-radius:10px;
+  background:var(--accent); color:#fff;
+  border:none; cursor:pointer; font-size:13px; font-weight:600;
+}
+
+/* ── History Panel ── */
+.version-list { display:flex; flex-direction:column; gap:6px; }
+.version-item {
+  display:flex; align-items:center; gap:10px;
+  padding:11px 13px; border-radius:12px;
+  background:var(--surface2); border:1px solid var(--border);
+}
+.version-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--accent); flex-shrink:0;
+}
+.version-info { flex:1; }
+.version-label { font-size:13.5px; font-weight:600; }
+.version-time { font-size:11px; color:var(--text2); margin-top:2px; }
+.version-restore {
+  padding:5px 11px; border-radius:8px; font-size:12px; font-weight:600;
+  background:var(--surface); border:1px solid var(--border2);
+  color:var(--text2); cursor:pointer; transition:border-color 0.15s, color 0.15s;
+}
+.version-restore:active { border-color:var(--accent); color:var(--accent); }
+.version-empty { text-align:center; color:var(--text2); font-size:13.5px; padding:32px 0; }
+
+/* ── Toast ── */
+#toast {
+  position:fixed; bottom:calc(var(--tab-h) + var(--safe-b) + 12px); left:50%;
+  transform:translateX(-50%) translateY(8px);
+  background:var(--surface); border:1px solid var(--border2);
+  border-radius:12px; padding:9px 16px;
+  font-size:13px; font-weight:600; color:var(--text);
+  opacity:0; pointer-events:none; z-index:999;
+  transition:opacity 0.2s, transform 0.2s;
+  white-space:nowrap;
+}
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body data-theme="">
+
+<div id="app">
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <button id="back-btn" onclick="history.back()" aria-label="Back">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div id="project-info">
+      <div id="project-name">{{ project.name }}</div>
+      <div id="project-sub">Website Builder</div>
+    </div>
+    <a id="dl-btn" href="/project/website/{{ project.id }}/download" aria-label="Download">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    </a>
+  </div>
+
+  <!-- CHAT STREAM -->
+  <div id="chat-wrap">
+    <div id="chat-stream">
+
+      <!-- Empty state (shown when no messages) -->
+      <div id="empty-state" {% if messages %}style="display:none"{% endif %}>
+        <div class="icon">🌐</div>
+        <h3>Build your website</h3>
+        <p>Describe what you want and I'll generate the code instantly.</p>
+        <div class="suggestion-chips">
+          <div class="chip" onclick="useChip(this)">Landing page for a café</div>
+          <div class="chip" onclick="useChip(this)">Portfolio site</div>
+          <div class="chip" onclick="useChip(this)">Simple blog layout</div>
+          <div class="chip" onclick="useChip(this)">Product showcase</div>
+        </div>
+      </div>
+
+      <!-- Server-rendered history -->
+      {% for msg in messages %}
+      <div class="msg-row {{ 'user' if msg.sender == 'You' else 'ai' }}">
+        <div class="msg-label">{{ msg.sender }}</div>
+        <div class="msg-text">{{ msg.text }}</div>
+      </div>
+      {% endfor %}
+
+      <!-- Typing -->
+      <div id="typing">
+        <div class="msg-label">Jarvis</div>
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FILE UPDATE BANNER -->
+  <div id="file-update-banner">
+    <span>📁</span>
+    <span id="file-update-text">Files updated</span>
+    <button onclick="openPanel('files')" style="margin-left:auto;background:var(--green);color:#fff;border:none;border-radius:7px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;">View</button>
+  </div>
+
+  <!-- INPUT DOCK -->
+  <div id="input-dock">
+    <div id="input-row">
+      <textarea
+        id="chat-input"
+        rows="1"
+        placeholder="Describe your website…"
+        maxlength="2000"
+      ></textarea>
+      <button id="send-btn" onclick="sendMessage()" disabled>
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM TAB BAR -->
+<div id="tabbar">
+  <button class="tab-btn active" data-tab="chat" onclick="switchTab('chat')">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="tab-label">Chat</span>
+  </button>
+  <button class="tab-btn" data-tab="files" onclick="switchTab('files')">
+    <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+    <span class="tab-label">Files</span>
+    <span class="tab-badge" id="files-badge" style="display:none"></span>
+  </button>
+  <button class="tab-btn" data-tab="preview" onclick="switchTab('preview')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+    <span class="tab-label">Preview</span>
+  </button>
+  <button class="tab-btn" data-tab="history" onclick="switchTab('history')">
+    <svg viewBox="0 0 24 24"><polyline points="12 8 12 12 14 14"/><path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5V15h5"/></svg>
+    <span class="tab-label">History</span>
+  </button>
+</div>
+
+<!-- FILES PANEL -->
+<div class="panel-overlay" id="files-overlay" onclick="handleOverlayClick(event,'files')">
+  <div class="panel-sheet" id="files-sheet">
+    <div class="panel-handle"></div>
+    <div class="panel-header">
+      <span class="panel-title">Files</span>
+      <button class="panel-close" onclick="closePanel('files')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body" style="position:relative;">
+      <div class="file-list" id="file-list">
+        <div class="file-empty" id="files-empty">No files yet.<br>Start chatting to generate your site!</div>
+      </div>
+      <!-- File viewer (slides over list) -->
+      <div id="file-viewer">
+        <div id="file-viewer-header">
+          <button id="file-viewer-back" onclick="closeFileViewer()">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span id="file-viewer-name"></span>
+          <button id="file-copy-btn" onclick="copyFileContent()">Copy</button>
+        </div>
+        <pre id="file-code"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PREVIEW PANEL -->
+<div class="panel-overlay" id="preview-overlay" onclick="handleOverlayClick(event,'preview')">
+  <div class="panel-sheet" id="preview-sheet" style="max-height:92dvh;">
+    <div class="panel-handle"></div>
+    <div class="panel-header">
+      <span class="panel-title">Preview</span>
+      <div style="display:flex;gap:8px;">
+        <button id="preview-reload" onclick="reloadPreview()" style="background:var(--surface2);color:var(--text2);border:1px solid var(--border2);">Refresh</button>
+        <button class="panel-close" onclick="closePanel('preview')">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div id="preview-container" style="flex:1;display:flex;flex-direction:column;">
+      <div class="preview-empty" id="preview-empty">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <p>Build something first,<br>then preview it here.</p>
+      </div>
+      <iframe id="preview-frame" style="display:none;flex:1;border:none;"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY PANEL -->
+<div class="panel-overlay" id="history-overlay" onclick="handleOverlayClick(event,'history')">
+  <div class="panel-sheet" id="history-sheet">
+    <div class="panel-handle"></div>
+    <div class="panel-header">
+      <span class="panel-title">Version History</span>
+      <button class="panel-close" onclick="closePanel('history')">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <div class="version-list" id="version-list">
+        <div class="version-empty" id="versions-empty">No versions yet.<br>Each time files are generated, a snapshot is saved.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+const PROJECT_ID = {{ project.id }};
+let currentFiles = {{ files | tojson }};
+let isSending = false;
+
+// ── Theme ──────────────────────────────────────────────────────
+(function(){
+  const t = localStorage.getItem('jarvis-dark');
+  const theme = t ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  document.body.setAttribute('data-theme', theme);
+})();
+
+// ── Textarea auto-resize ───────────────────────────────────────
+const input = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
+
+input.addEventListener('input', () => {
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  sendBtn.disabled = !input.value.trim() || isSending;
+});
+input.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    if (!sendBtn.disabled) sendMessage();
+  }
+});
+
+// ── Init files on load ─────────────────────────────────────────
+renderFileList(currentFiles);
+updateFilesBadge(currentFiles.length);
+
+// ── Scroll to bottom ───────────────────────────────────────────
+function scrollBottom() {
+  const wrap = document.getElementById('chat-wrap');
+  wrap.scrollTop = wrap.scrollHeight;
+}
+scrollBottom();
+
+// ── Chip suggestions ──────────────────────────────────────────
+function useChip(el) {
+  input.value = el.textContent;
+  input.dispatchEvent(new Event('input'));
+  input.focus();
+}
+
+// ── Send message ──────────────────────────────────────────────
+async function sendMessage() {
+  const msg = input.value.trim();
+  if (!msg || isSending) return;
+
+  isSending = true;
+  sendBtn.disabled = true;
+  input.value = '';
+  input.style.height = 'auto';
+
+  // Hide empty state
+  document.getElementById('empty-state').style.display = 'none';
+
+  // Add user bubble
+  appendBubble('You', msg, 'user');
+  scrollBottom();
+
+  // Show typing
+  document.getElementById('typing').style.display = 'block';
+  scrollBottom();
+
+  // Hide file banner
+  const banner = document.getElementById('file-update-banner');
+  banner.classList.remove('show');
+
+  try {
+    const res = await fetch(`/project/website/${PROJECT_ID}/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+
+    document.getElementById('typing').style.display = 'none';
+
+    if (data.error && !data.message) {
+      appendBubble('Jarvis', data.error || 'Something went wrong.', 'ai');
+    } else {
+      appendBubble('Jarvis', data.message || 'Done!', 'ai');
+
+      if (data.files && data.files.length > 0) {
+        currentFiles = data.files;
+        renderFileList(currentFiles);
+        updateFilesBadge(currentFiles.length);
+
+        // Show update banner
+        document.getElementById('file-update-text').textContent =
+          `${data.files.length} file${data.files.length !== 1 ? 's' : ''} generated`;
+        banner.classList.add('show');
+        setTimeout(() => banner.classList.remove('show'), 5000);
+
+        // Reload preview if it's been opened
+        if (document.getElementById('preview-frame').style.display !== 'none') {
+          reloadPreview();
+        }
+      }
+    }
+  } catch(e) {
+    document.getElementById('typing').style.display = 'none';
+    appendBubble('Jarvis', 'Connection error. Please try again.', 'ai');
+  }
+
+  isSending = false;
+  sendBtn.disabled = !input.value.trim();
+  scrollBottom();
+}
+
+function appendBubble(sender, text, cls) {
+  const stream = document.getElementById('chat-stream');
+  const row = document.createElement('div');
+  row.className = `msg-row ${cls}`;
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = sender;
+
+  const textEl = document.createElement('div');
+  textEl.className = 'msg-text';
+  // Render markdown for AI messages
+  if (cls === 'ai' && typeof marked !== 'undefined') {
+    textEl.innerHTML = DOMPurify.sanitize(marked.parse(text));
+  } else {
+    textEl.textContent = text;
+  }
+
+  row.appendChild(label);
+  row.appendChild(textEl);
+  // Insert before typing indicator
+  const typing = document.getElementById('typing');
+  stream.insertBefore(row, typing);
+}
+
+// ── Tab switching ─────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+
+  if (tab === 'chat') {
+    // Close any open panel
+    ['files','preview','history'].forEach(closePanel);
+  } else {
+    openPanel(tab);
+  }
+}
+
+// ── Panels ────────────────────────────────────────────────────
+function openPanel(name) {
+  // Update tab state
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const tabBtn = document.querySelector(`[data-tab="${name}"]`);
+  if (tabBtn) tabBtn.classList.add('active');
+
+  const overlay = document.getElementById(`${name}-overlay`);
+  overlay.classList.add('open');
+
+  if (name === 'preview') loadPreview();
+  if (name === 'history') loadVersions();
+}
+
+function closePanel(name) {
+  document.getElementById(`${name}-overlay`).classList.remove('open');
+  // Switch tab back to chat
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('[data-tab="chat"]').classList.add('active');
+}
+
+function handleOverlayClick(e, name) {
+  if (e.target === document.getElementById(`${name}-overlay`)) closePanel(name);
+}
+
+// ── Files ─────────────────────────────────────────────────────
+function updateFilesBadge(count) {
+  const badge = document.getElementById('files-badge');
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderFileList(files) {
+  const list = document.getElementById('file-list');
+  const empty = document.getElementById('files-empty');
+
+  // Clear everything except the viewer
+  list.querySelectorAll('.file-item').forEach(el => el.remove());
+  if (empty) empty.style.display = files.length ? 'none' : 'block';
+
+  files.forEach(f => {
+    const ext = f.filename.split('.').pop().toLowerCase();
+    const iconClass = ['html','css','js'].includes(ext) ? ext : 'other';
+    const icons = { html:'🌐', css:'🎨', js:'⚡', other:'📄' };
+
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `
+      <div class="file-icon ${iconClass}">${icons[iconClass]}</div>
+      <div class="file-name">${escHtml(f.filename)}</div>
+      <div class="file-time">${f.updated_at ? f.updated_at.split(' ')[1] || '' : ''}</div>
+    `;
+    item.onclick = () => openFileViewer(f.filename);
+    list.appendChild(item);
+  });
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+let currentViewFile = '';
+
+async function openFileViewer(filename) {
+  currentViewFile = filename;
+  document.getElementById('file-viewer-name').textContent = filename;
+  document.getElementById('file-code').textContent = 'Loading…';
+  document.getElementById('file-viewer').classList.add('show');
+
+  try {
+    const res = await fetch(`/project/website/${PROJECT_ID}/file/${encodeURIComponent(filename)}`);
+    const data = await res.json();
+    document.getElementById('file-code').textContent = data.content || '';
+  } catch(e) {
+    document.getElementById('file-code').textContent = 'Failed to load file.';
+  }
+}
+
+function closeFileViewer() {
+  document.getElementById('file-viewer').classList.remove('show');
+}
+
+function copyFileContent() {
+  const code = document.getElementById('file-code').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Copied!'));
+}
+
+// ── Preview ───────────────────────────────────────────────────
+function loadPreview() {
+  if (currentFiles.length === 0) return;
+  const frame = document.getElementById('preview-frame');
+  const empty = document.getElementById('preview-empty');
+  empty.style.display = 'none';
+  frame.style.display = 'block';
+  frame.src = `/project/website/${PROJECT_ID}/preview?t=${Date.now()}`;
+}
+
+function reloadPreview() {
+  const frame = document.getElementById('preview-frame');
+  const empty = document.getElementById('preview-empty');
+  if (currentFiles.length === 0) {
+    empty.style.display = 'flex';
+    frame.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  frame.style.display = 'block';
+  frame.src = `/project/website/${PROJECT_ID}/preview?t=${Date.now()}`;
+}
+
+// ── History ───────────────────────────────────────────────────
+async function loadVersions() {
+  const list = document.getElementById('version-list');
+  const empty = document.getElementById('versions-empty');
+  list.querySelectorAll('.version-item').forEach(el => el.remove());
+
+  try {
+    const res = await fetch(`/project/website/${PROJECT_ID}/versions`);
+    const data = await res.json();
+    const versions = data.versions || [];
+
+    empty.style.display = versions.length ? 'none' : 'block';
+
+    versions.forEach((v, i) => {
+      const item = document.createElement('div');
+      item.className = 'version-item';
+      item.innerHTML = `
+        <div class="version-dot"></div>
+        <div class="version-info">
+          <div class="version-label">Version ${versions.length - i}</div>
+          <div class="version-time">${v.created_at || v.label || ''}</div>
+        </div>
+        <button class="version-restore" onclick="restoreVersion(${v.id})">Restore</button>
+      `;
+      list.appendChild(item);
+    });
+  } catch(e) {
+    empty.style.display = 'block';
+    empty.textContent = 'Failed to load versions.';
+  }
+}
+
+async function restoreVersion(versionId) {
+  if (!confirm('Restore this version? Current files will be overwritten.')) return;
+  try {
+    const res = await fetch(`/project/website/${PROJECT_ID}/restore/${versionId}`, { method: 'POST' });
+    const data = await res.json();
+    if (data.ok) {
+      currentFiles = data.files;
+      renderFileList(currentFiles);
+      updateFilesBadge(currentFiles.length);
+      closePanel('history');
+      showToast('Version restored!');
+      if (document.getElementById('preview-frame').style.display !== 'none') {
+        reloadPreview();
+      }
+    }
+  } catch(e) {
+    showToast('Failed to restore version.');
+  }
+}
+
+// ── Toast ─────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+</script>
+</body>
+</html>
